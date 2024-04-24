@@ -3,10 +3,13 @@ package co.edu.escuelaing.cvds.ClothCraft.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,20 +38,18 @@ public class WardrobeController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    /* 
-     * 
-     *
+    
     @GetMapping("{id}")
-    public ResponseEntity<User> getById(@PathVariable("id") String  id) {
-        Optional<User> existingUserOptional = userService.findById(id);
+    public ResponseEntity<Wardrobe> getById(@PathVariable("id") String  id) {
+        Optional<Wardrobe> existingWardrobeOptional = wardrobeRepository.findById(id);
 
-        if (existingUserOptional.isPresent()) {
-            return new ResponseEntity<>(existingUserOptional.get(), HttpStatus.OK);
+        if (existingWardrobeOptional.isPresent()) {
+            return new ResponseEntity<>(existingWardrobeOptional.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
+    /* 
     @PostMapping
     public ResponseEntity<User> create(@RequestBody User user) {
         try {

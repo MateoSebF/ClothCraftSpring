@@ -1,6 +1,8 @@
 package co.edu.escuelaing.cvds.ClothCraft.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,8 +19,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@ToString
 @Table(name = "User")
+@JsonIdentityInfo(generator =  ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User {
     @Id
     @Column(name = "id", nullable = false, unique = true)
@@ -34,6 +36,11 @@ public class User {
     private String password;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private Wardrobe wardrobe;
+    
+    @Override
+    public String toString() {
+        return "User{" + "id='" + id + '\'' + ", name='" + name + '\'' +
+        ", email='" + email + '\'' + ", password='" + password + '\'' +'}';
+    }
 }
