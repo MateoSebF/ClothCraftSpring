@@ -1,4 +1,6 @@
+
 package co.edu.escuelaing.cvds.ClothCraft.model;
+
 
 import jakarta.persistence.CascadeType;
 
@@ -12,10 +14,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
-import co.edu.escuelaing.cvds.ClothCraft.model.User;
-
 /**
- * User
+ * Clothing
  */
 @SuppressWarnings("unused")
 @Setter
@@ -23,25 +23,27 @@ import co.edu.escuelaing.cvds.ClothCraft.model.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Wardrobe")
+@Table(name = "Clothing")
 @JsonIdentityInfo(generator =  ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Wardrobe {
+public class Clothing {
     @Id
     @Column(name = "id", nullable = false,  unique = true)
     private String id;
+    
+    @Column(name = "name")
+    private String name;
+    
+    /* 
+    @Lob
+    @Column(name = "Image", nullable = false)
+    private byte[] image;*/
 
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    @Column(name = "color", nullable = false)
+    private String color;
 
-    @ManyToMany
-    @JoinTable(name = "Wardrobe_Clothing", 
-    joinColumns = @JoinColumn(name = "wardrobe_id"), 
-    inverseJoinColumns = @JoinColumn(name = "clothing_id"))
-    private Set<Clothing> clothes;
+    @Column(name = "size")
+    private String size;
 
-    @Override
-    public String toString(){
-        return "Wardrobe{" + "id='" + id + '\'' + ", user_id='" + user + '\'' +'}';
-    }
+    @ManyToMany(mappedBy = "clothes")
+    private Set<Wardrobe> wardrobe;
 }
