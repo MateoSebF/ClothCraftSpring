@@ -1,6 +1,7 @@
 package co.edu.escuelaing.cvds.ClothCraft;
 
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -39,15 +40,20 @@ public class ClothCraftApplication {
 	public CommandLineRunner run() {
 		return (args) -> {
 			log.info("Adding Users....");
-			User user1 = new User("1a2b3c4d", "Juan Perez", "juan@example.com", "password123",null);
+			User user1 = new User("1a2b3c4d", "Juan Perez", "juan@example.com", "password123",null,null);
 			userService.addUser(user1);
-			User user2 = new User("e5f6g7h8", "María García", "maria@example.com", "password123",null);
+			User user2 = new User("e5f6g7h8", "María García", "maria@example.com", "password123",null,null);
 			userService.addUser(user2);
-			User user3 = new User("i9j0k1l2", "Carlos Rodríguez", "carlos@example.com", "password123",null);
+			User user3 = new User("i9j0k1l2", "Carlos Rodríguez", "carlos@example.com", "password123",null,null);
 			userService.addUser(user3);
 
 			log.info("Adding Clothes....");
-			Clothing clothing1 = new Clothing("1","Camisa","red","XL",new HashSet<Wardrobe>());
+			Clothing clothing1 = new Clothing("1",
+			"Camisa",
+			"red",
+			"XL",
+			new HashSet<>(),
+			new ArrayList<>());
 			clothingRepository.save(clothing1);
 			log.info("Adding Wardrobes....");
 			HashSet<Clothing> clothes = new HashSet<Clothing>();
