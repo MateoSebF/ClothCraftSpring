@@ -27,7 +27,7 @@ import co.edu.escuelaing.cvds.ClothCraft.model.User;
 @JsonIdentityInfo(generator =  ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Wardrobe {
     @Id
-    @Column(name = "id", nullable = false,  unique = true)
+    @Column(name = "id", nullable = false,  unique =     true)
     private String id;
 
     @OneToOne

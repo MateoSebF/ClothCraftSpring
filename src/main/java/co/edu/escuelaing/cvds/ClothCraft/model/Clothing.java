@@ -2,13 +2,12 @@
 package co.edu.escuelaing.cvds.ClothCraft.model;
 
 
-import jakarta.persistence.CascadeType;
 
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.*;
@@ -17,7 +16,6 @@ import lombok.*;
 /**
  * Clothing
  */
-@SuppressWarnings("unused")
 @Setter
 @Getter
 @NoArgsConstructor
@@ -46,4 +44,7 @@ public class Clothing {
 
     @ManyToMany(mappedBy = "clothes")
     private Set<Wardrobe> wardrobe;
+
+    @ManyToMany(mappedBy = "clothes")
+    private List<Outfit> outfits;
 }

@@ -38,6 +38,9 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Wardrobe wardrobe;
     
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Calendary calendary;
+
     @Override
     public String toString() {
         return "User{" + "id='" + id + '\'' + ", name='" + name + '\'' +
