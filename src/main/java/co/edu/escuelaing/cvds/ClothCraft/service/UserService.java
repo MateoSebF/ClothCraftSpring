@@ -1,64 +1,47 @@
 package co.edu.escuelaing.cvds.ClothCraft.service;
 
-
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-/**
- * UserService
- */
+import java.util.List;
+
 @Service
 public class UserService {
-    private final UserRepository userRepository;
-    
-    public UserService(UserRepository userRepository){
-        this.userRepository = userRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public User getUserById(String id) {
+        return userRepository.findById(id).orElse(null);
     }
 
-    public User addUser(User user){
-        User validator = null;
-        if (userRepository.findById(user.getId()).isEmpty()){
-            validator = userRepository.save(user);
-        }
-        return validator;
-    }
-
-    public User updateUser(User user){
-        User validator = null;
-        if (userRepository.findById(user.getId()).isPresent()){
-            validator = userRepository.save(user);
-        }
-        return validator;
-    }
-
-    public boolean deleteUserById(String id){
-        boolean validator = false;
-        if (userRepository.findById(id).isPresent()){
-            userRepository.deleteById(id);
-            validator = true;
-        }
-        return validator;
-    }
-
-    public boolean deleteUser(User user){
-        boolean validator = false;
-        if (userRepository.findById(user.getId()).isPresent()){
-            userRepository.delete(user);
-            validator = true;
-        }
-        return validator;
-    }
-
-    public Optional<User> findById(String id){
-        return userRepository.findById(id);
-    }
-
-    public List<User> findAll() {
+    public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
+
+    public User updateUser(String id, User user) {
+        User existingUser = userRepository.findById(id).orElse(null);
+        if (existingUser != null) {
+            user.setId(existingUser.getId());
+            return userRepository.save(user);
+        } else {
+            return null;
+        }
+    }
+
+    public boolean deleteUser(String id) {
+        User existingUser = userRepository.findById(id).orElse(null);
+        if (existingUser != null) {
+            userRepository.delete(existingUser);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

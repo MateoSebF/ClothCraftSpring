@@ -1,83 +1,69 @@
 package co.edu.escuelaing.cvds.ClothCraft.controller;
 
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.WardrobeDTO;
+import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
-import co.edu.escuelaing.cvds.ClothCraft.repository.WardrobeRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/wardrobe")
 public class WardrobeController {
 
     @Autowired
-    WardrobeRepository wardrobeRepository;
+    private WardrobeService wardrobeService;
 
-    @GetMapping
-    public ResponseEntity<List<Wardrobe>> getAll() {
-        try {
-            List<Wardrobe> items = new ArrayList<Wardrobe>();
-
-            wardrobeRepository.findAll().forEach(items::add);
-
-            if (items.isEmpty()){
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(items, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
-    @GetMapping("{id}")
-    public ResponseEntity<Wardrobe> getById(@PathVariable("id") String  id) {
-        Optional<Wardrobe> existingWardrobeOptional = wardrobeRepository.findById(id);
-
-        if (existingWardrobeOptional.isPresent()) {
-            return new ResponseEntity<>(existingWardrobeOptional.get(), HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<WardrobeDTO> getWardrobeById(@PathVariable String id) {
+        Wardrobe wardrobe = wardrobeService.getWardrobeById(id);
+        if (wardrobe != null) {
+            return new ResponseEntity<>(wardrobe.toDTO(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<WardrobeDTO>> getAllWardrobes() {
+        List<Wardrobe> wardrobeList = wardrobeService.getAllWardrobes();
+        List<WardrobeDTO> wardrobeDTOList = wardrobeList.stream()
+                .map(Wardrobe::toDTO)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(wardrobeDTOList, HttpStatus.OK);
     }
     /* 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody User user) {
-        try {
-            User savedItem = userService.addUser(user);
-            return new ResponseEntity<>(savedItem, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
+    public ResponseEntity<WardrobeDTO> createWardrobe(@RequestBody WardrobeDTO wardrobeDTO) {
+        Wardrobe wardrobe = wardrobeService.createWardrobe(wardrobeDTO.toEntity());
+        if (wardrobe != null) {
+            return new ResponseEntity<>(wardrobe.toDTO(), HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<User> update(@PathVariable("id") String id, @RequestBody User user) {
-        User updatedUser = userService.updateUser(user);
-        if (updatedUser != null) {
-            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    @PutMapping("/{id}")
+    public ResponseEntity<WardrobeDTO> updateWardrobe(@PathVariable String id, @RequestBody WardrobeDTO wardrobeDTO) {
+        Wardrobe updatedWardrobe = wardrobeService.updateWardrobe(id, wardrobeDTO.toEntity());
+        if (updatedWardrobe != null) {
+            return new ResponseEntity<>(updatedWardrobe.toDTO(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }*/
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteWardrobe(@PathVariable String id) {
+        boolean deleted = wardrobeService.deleteWardrobe(id);
+        if (deleted) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-    @DeleteMapping("{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable("id") String id) {
-        try {
-            userService.deleteUserById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-        }
-    }
-     */
 }

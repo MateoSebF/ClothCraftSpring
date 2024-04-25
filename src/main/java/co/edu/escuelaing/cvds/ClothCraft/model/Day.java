@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.DayDTO;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,4 +31,13 @@ public class Day {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "outfit_id")
     private Outfit outfit;
+
+    public DayDTO toDTO() {
+        return new DayDTO(id, calendary.getId(), outfit.getId());
+    }
+
+    @Override
+    public String toString(){
+        return toDTO().toString();
+    }
 }
