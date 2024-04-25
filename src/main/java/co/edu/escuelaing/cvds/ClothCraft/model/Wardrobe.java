@@ -17,7 +17,7 @@ import co.edu.escuelaing.cvds.ClothCraft.model.DTO.WardrobeDTO;
 @Table(name = "Wardrobe")
 public class Wardrobe {
     @Id
-    @Column(name = "id", nullable = false,  unique =     true)
+    @Column(name = "id", nullable = false,  unique = true)
     private String id;
 
     @OneToOne
@@ -30,7 +30,9 @@ public class Wardrobe {
     inverseJoinColumns = @JoinColumn(name = "clothing_id"))
     private Set<Clothing> clothes;
 
-    public WardrobeDTO toDTO() {
+    
+
+	public WardrobeDTO toDTO() {
         Set<String> clothesIds = new HashSet<>();
         for (Clothing clothing : clothes) {
             clothesIds.add(clothing.getId());

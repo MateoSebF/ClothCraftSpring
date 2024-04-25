@@ -11,6 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.DayDTO;
 
 @AllArgsConstructor
@@ -35,8 +37,11 @@ public class Day {
     public DayDTO toDTO() {
         return new DayDTO(id, calendary.getId(), outfit.getId());
     }
+    
+    
 
-    @Override
+
+	@Override
     public String toString(){
         return toDTO().toString();
     }

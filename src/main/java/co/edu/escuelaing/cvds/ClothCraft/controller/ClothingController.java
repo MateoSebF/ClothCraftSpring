@@ -8,6 +8,7 @@ import co.edu.escuelaing.cvds.ClothCraft.service.ClothingService;
 import co.edu.escuelaing.cvds.ClothCraft.service.OutfitService;
 import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
 
+import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,17 @@ public class ClothingController {
         if (clothing != null) {
             return new ResponseEntity<>(clothing.toDTO(), HttpStatus.OK);
         } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/image/{id}")
+    public ResponseEntity<byte[]> getImagen(@PathVariable String id) {
+        Clothing clothing = clothingService.getClothingById(id);
+        if (clothing != null) {
+            byte[] image = clothing.getImage();
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
+        } 
+        else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -78,6 +90,7 @@ public class ClothingController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
 
     private Clothing convertToObject(ClothingDTO clothingDTO){
         HashSet<Wardrobe> wardrobes = new HashSet<>();

@@ -79,7 +79,7 @@ public class CalendaryController {
         }
     }
     private Calendary convertToObject(CalendaryDTO calendaryDTO) {
-        User user =  userService.getUserById(calendaryDTO.getUserId());
+        User user =  calendaryDTO.getUserId() != null ? userService.getUserById(calendaryDTO.getUserId()) : null;
         List<Day> days = new ArrayList<>();
         for (String daysId : calendaryDTO.getDayIds()) days.add(dayService.getDayById(daysId));
         Calendary calendary = calendaryService.createCalendary(calendaryDTO.toEntity(user, days));

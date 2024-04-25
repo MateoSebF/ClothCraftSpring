@@ -23,7 +23,7 @@ public class User {
     @Column(name = "id", nullable = false, unique = true)
     private String id;
     
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -38,7 +38,9 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Calendary calendary;
 
-    public UserDTO toDTO() {
+    
+
+	public UserDTO toDTO() {
         return new UserDTO(id, name, email, password,
             wardrobe != null ? wardrobe.getId() : null,
             calendary != null ? calendary.getId() : null);

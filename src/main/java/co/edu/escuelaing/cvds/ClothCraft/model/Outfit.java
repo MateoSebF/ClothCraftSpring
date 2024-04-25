@@ -3,6 +3,7 @@ package co.edu.escuelaing.cvds.ClothCraft.model;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -39,7 +40,9 @@ public class Outfit {
     inverseJoinColumns = @JoinColumn(name = "clothing_id"))
     private List<Clothing> clothes;
     
-    public OutfitDTO toDTO() {
+    
+    
+	public OutfitDTO toDTO() {
         List<String> clothesIds = clothes.stream()
                                         .map(Clothing::getId)
                                         .collect(Collectors.toList());

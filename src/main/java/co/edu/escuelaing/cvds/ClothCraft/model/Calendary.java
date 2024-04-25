@@ -3,6 +3,7 @@ package co.edu.escuelaing.cvds.ClothCraft.model;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,8 +41,11 @@ public class Calendary {
 
         return new CalendaryDTO(id, user.getId(), dayIds);
     }
+    
 
-    @Override
+
+
+	@Override
     public String toString(){
         return toDTO().toString();
     }

@@ -16,13 +16,14 @@ import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 public class ClothingDTO {
     private String id;
     private String name;
+    private byte[] image;
     private String color;
     private String size;
     private Set<String> wardrobeIds;
     private List<String> outfitIds;
     
     public Clothing toEntity(Set<Wardrobe> wardrobes, List<Outfit> outfits){
-        Clothing clothing = new Clothing(id,name,color,size,wardrobes,outfits);
+        Clothing clothing = new Clothing(id,name,image,color,size,wardrobes,outfits);
         return clothing;
     }
 }

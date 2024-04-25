@@ -1,6 +1,8 @@
 package co.edu.escuelaing.cvds.ClothCraft.controller;
 
+import co.edu.escuelaing.cvds.ClothCraft.model.Calendary;
 import co.edu.escuelaing.cvds.ClothCraft.model.Day;
+import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.DayDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
 import co.edu.escuelaing.cvds.ClothCraft.service.DayService;
@@ -75,7 +77,9 @@ public class DayController {
     }
 
     private Day convertToObject(DayDTO dayDTO) {
-        Day day = dayDTO.toEntity(calendaryService.getCalendaryById(dayDTO.getId()),outfitService.getOutfitById(dayDTO.getId()));
+        Calendary calendary = dayDTO.getCalendaryId() != null ? calendaryService.getCalendaryById(dayDTO.getCalendaryId()) : null;
+        Outfit outfit = dayDTO.getOutfitId() != null ? outfitService.getOutfitById(dayDTO.getOutfitId()) : null;
+        Day day = dayDTO.toEntity(calendary,outfit);
         return day;
     }
 

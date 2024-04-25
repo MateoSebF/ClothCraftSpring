@@ -49,7 +49,10 @@ public class WardrobeController {
     
     @PostMapping
     public ResponseEntity<WardrobeDTO> createWardrobe(@RequestBody WardrobeDTO wardrobeDTO) {
+        System.out.println(wardrobeDTO.getUserId());
         Wardrobe wardrobe = wardrobeService.createWardrobe(convertToObject(wardrobeDTO));
+        System.out.println("wardrobe:");
+        System.out.println(wardrobe);
         if (wardrobe != null) {
             return new ResponseEntity<>(wardrobe.toDTO(), HttpStatus.CREATED);
         } else {
@@ -83,7 +86,7 @@ public class WardrobeController {
     }
 
     private Wardrobe convertToObject(WardrobeDTO wardrobeDTO) {
-        User user = userService.getUserById(wardrobeDTO.getId());
+        User user = wardrobeDTO.getUserId() != null ? userService.getUserById(wardrobeDTO.getUserId()) : null;
         Set<Clothing> clothings = new HashSet<>();
         for (String clothingId: wardrobeDTO.getClothesIds()) clothings.add(clothingService.getClothingById(clothingId));
         return wardrobeDTO.toEntity(user,clothings);

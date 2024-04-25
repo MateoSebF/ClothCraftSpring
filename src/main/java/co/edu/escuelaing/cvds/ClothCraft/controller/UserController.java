@@ -49,7 +49,6 @@ public class UserController {
     
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        System.out.println(convertToObject(userDTO));
         User user = userService.createUser(convertToObject(userDTO));
         if (user != null) {
             return new ResponseEntity<>(user.toDTO(), HttpStatus.CREATED);
@@ -79,8 +78,8 @@ public class UserController {
     }
 
     private User convertToObject(UserDTO userDTO) {
-        Wardrobe wardrobe = wardrobeService.getWardrobeById(userDTO.getWardrobeId());
-        Calendary calendary = calendaryService.getCalendaryById(userDTO.getCalendaryId());
+        Wardrobe wardrobe = userDTO.getWardrobeId() != null ? wardrobeService.getWardrobeById(userDTO.getWardrobeId()) : null;
+        Calendary calendary = userDTO.getCalendaryId() != null ? calendaryService.getCalendaryById(userDTO.getCalendaryId()) : null;
         return userDTO.toEntity(wardrobe,calendary);
     }
 }

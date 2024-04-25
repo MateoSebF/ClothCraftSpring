@@ -1,6 +1,9 @@
 package co.edu.escuelaing.cvds.ClothCraft;
 
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -47,9 +50,15 @@ public class ClothCraftApplication {
 			User user3 = new User("i9j0k1l2", "Carlos Rodríguez", "carlos@example.com", "password123",null,null);
 			userService.createUser(user3);
 
+			String imagePath = "images/img1.jpg";
+			Path absolutePath = Paths.get(imagePath).toAbsolutePath();
+			System.out.println("Ruta absoluta del archivo: " + absolutePath);
+
+			byte[] imageBytes = Files.readAllBytes(Paths.get("images/img1.jpg"));
 			log.info("Adding Clothes....");
 			Clothing clothing1 = new Clothing("1",
 			"Camisa",
+			imageBytes,
 			"red",
 			"XL",
 			new HashSet<>(),

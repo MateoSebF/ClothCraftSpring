@@ -3,6 +3,8 @@ package co.edu.escuelaing.cvds.ClothCraft.model;
 
 import java.util.Set;
 import java.util.stream.Collectors;
+
+
 import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,10 +27,9 @@ public class Clothing {
     @Column(name = "name")
     private String name;
     
-    /* 
     @Lob
-    @Column(name = "Image", nullable = false)
-    private byte[] image;*/
+    @Column(name = "image", nullable = false, columnDefinition = "BLOB")
+    private byte[] image;
 
     @Column(name = "color", nullable = false)
     private String color;
@@ -41,8 +42,9 @@ public class Clothing {
 
     @ManyToMany(mappedBy = "clothes")
     private List<Outfit> outfits;
-
-    public ClothingDTO toDTO() {
+    
+    
+	public ClothingDTO toDTO() {
         Set<String> wardrobeIds = wardrobe.stream()
                                           .map(Wardrobe::getId)
                                           .collect(Collectors.toSet());
@@ -51,7 +53,7 @@ public class Clothing {
                                        .map(Outfit::getId)
                                        .collect(Collectors.toList());
 
-        return new ClothingDTO(id, name, color, size, wardrobeIds, outfitIds);
+        return new ClothingDTO(id, name, image, color, size, wardrobeIds, outfitIds);
     }
     @Override
     public String toString(){
