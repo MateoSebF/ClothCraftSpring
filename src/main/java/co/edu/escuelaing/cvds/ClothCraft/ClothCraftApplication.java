@@ -51,9 +51,7 @@ public class ClothCraftApplication {
 			Clothing clothing1 = new Clothing("1",
 			"Camisa",
 			"red",
-			"XL",
-			new HashSet<>(),
-			new ArrayList<>());
+			"XL");
 			clothingRepository.save(clothing1);
 			log.info("Adding Wardrobes....");
 			HashSet<Clothing> clothes = new HashSet<Clothing>();
@@ -75,7 +73,6 @@ public class ClothCraftApplication {
 			wardrobes.add(wardrobe1);
 			wardrobes.add(wardrobe2);
 			wardrobes.add(wardrobe3);
-			clothing1.setWardrobe(wardrobes);
 			clothingRepository.save(clothing1);
 
 			log.info("\nGetting all users....");

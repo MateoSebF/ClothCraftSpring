@@ -24,7 +24,6 @@ import co.edu.escuelaing.cvds.ClothCraft.model.User;
 @AllArgsConstructor
 @Entity
 @Table(name = "Wardrobe")
-@JsonIdentityInfo(generator =  ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Wardrobe {
     @Id
     @Column(name = "id", nullable = false,  unique =     true)
@@ -35,9 +34,6 @@ public class Wardrobe {
     private User user;
 
     @ManyToMany
-    @JoinTable(name = "Wardrobe_Clothing", 
-    joinColumns = @JoinColumn(name = "wardrobe_id"), 
-    inverseJoinColumns = @JoinColumn(name = "clothing_id"))
     private Set<Clothing> clothes;
 
     @Override

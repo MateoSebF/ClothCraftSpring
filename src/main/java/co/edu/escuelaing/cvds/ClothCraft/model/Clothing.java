@@ -22,7 +22,6 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "Clothing")
-@JsonIdentityInfo(generator =  ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Clothing {
     @Id
     @Column(name = "id", nullable = false,  unique = true)
@@ -41,10 +40,4 @@ public class Clothing {
 
     @Column(name = "size")
     private String size;
-
-    @ManyToMany(mappedBy = "clothes")
-    private Set<Wardrobe> wardrobe;
-
-    @ManyToMany(mappedBy = "clothes")
-    private List<Outfit> outfits;
 }

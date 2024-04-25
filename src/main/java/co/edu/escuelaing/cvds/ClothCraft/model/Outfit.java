@@ -2,6 +2,7 @@ package co.edu.escuelaing.cvds.ClothCraft.model;
 
 
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,8 +34,5 @@ public class Outfit {
     private Category category;
 
     @ManyToMany
-    @JoinTable(name = "Outfit_Clothing", 
-    joinColumns = @JoinColumn(name = "outfit_id"),
-    inverseJoinColumns = @JoinColumn(name = "clothing_id"))
-    private List<Clothing> clothes;
+    private Set<Clothing> clothes;
 }
