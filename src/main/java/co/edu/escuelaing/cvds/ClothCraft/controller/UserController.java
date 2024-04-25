@@ -1,8 +1,13 @@
 package co.edu.escuelaing.cvds.ClothCraft.controller;
 
+import co.edu.escuelaing.cvds.ClothCraft.model.Calendary;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
+import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
+import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
+import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +22,10 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private WardrobeService wardrobeService;
+    @Autowired
+    private CalendaryService calendaryService;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable String id) {
@@ -37,10 +46,11 @@ public class UserController {
         return new ResponseEntity<>(userDTOList, HttpStatus.OK);
     }
 
-    /* 
+    
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        User user = userService.createUser(userDTO.toEntity());
+        System.out.println(convertToObject(userDTO));
+        User user = userService.createUser(convertToObject(userDTO));
         if (user != null) {
             return new ResponseEntity<>(user.toDTO(), HttpStatus.CREATED);
         } else {
@@ -50,13 +60,13 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable String id, @RequestBody UserDTO userDTO) {
-        User updatedUser = userService.updateUser(id, userDTO.toEntity());
+        User updatedUser = userService.updateUser(id, convertToObject(userDTO));
         if (updatedUser != null) {
             return new ResponseEntity<>(updatedUser.toDTO(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }*/
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
@@ -66,5 +76,11 @@ public class UserController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    private User convertToObject(UserDTO userDTO) {
+        Wardrobe wardrobe = wardrobeService.getWardrobeById(userDTO.getWardrobeId());
+        Calendary calendary = calendaryService.getCalendaryById(userDTO.getCalendaryId());
+        return userDTO.toEntity(wardrobe,calendary);
     }
 }

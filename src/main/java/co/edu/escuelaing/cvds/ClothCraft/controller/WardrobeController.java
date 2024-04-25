@@ -1,14 +1,20 @@
 package co.edu.escuelaing.cvds.ClothCraft.controller;
 
+import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
+import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.WardrobeDTO;
+import co.edu.escuelaing.cvds.ClothCraft.service.ClothingService;
+import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -17,6 +23,10 @@ public class WardrobeController {
 
     @Autowired
     private WardrobeService wardrobeService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private ClothingService clothingService;
 
     @GetMapping("/{id}")
     public ResponseEntity<WardrobeDTO> getWardrobeById(@PathVariable String id) {
@@ -36,10 +46,10 @@ public class WardrobeController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(wardrobeDTOList, HttpStatus.OK);
     }
-    /* 
+    
     @PostMapping
     public ResponseEntity<WardrobeDTO> createWardrobe(@RequestBody WardrobeDTO wardrobeDTO) {
-        Wardrobe wardrobe = wardrobeService.createWardrobe(wardrobeDTO.toEntity());
+        Wardrobe wardrobe = wardrobeService.createWardrobe(convertToObject(wardrobeDTO));
         if (wardrobe != null) {
             return new ResponseEntity<>(wardrobe.toDTO(), HttpStatus.CREATED);
         } else {
@@ -49,13 +59,13 @@ public class WardrobeController {
 
     @PutMapping("/{id}")
     public ResponseEntity<WardrobeDTO> updateWardrobe(@PathVariable String id, @RequestBody WardrobeDTO wardrobeDTO) {
-        Wardrobe updatedWardrobe = wardrobeService.updateWardrobe(id, wardrobeDTO.toEntity());
+        Wardrobe updatedWardrobe = wardrobeService.updateWardrobe(id, convertToObject(wardrobeDTO));
         if (updatedWardrobe != null) {
             return new ResponseEntity<>(updatedWardrobe.toDTO(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }*/
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteWardrobe(@PathVariable String id) {
@@ -70,5 +80,12 @@ public class WardrobeController {
     public Wardrobe getWardrobeEntityById(String id) {
         Wardrobe wardrobe = wardrobeService.getWardrobeById(id);
         return wardrobe;
+    }
+
+    private Wardrobe convertToObject(WardrobeDTO wardrobeDTO) {
+        User user = userService.getUserById(wardrobeDTO.getId());
+        Set<Clothing> clothings = new HashSet<>();
+        for (String clothingId: wardrobeDTO.getClothesIds()) clothings.add(clothingService.getClothingById(clothingId));
+        return wardrobeDTO.toEntity(user,clothings);
     }
 }
