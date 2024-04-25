@@ -2,8 +2,6 @@ package co.edu.escuelaing.cvds.ClothCraft.model.DTO;
 
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,10 +21,7 @@ public class ClothingDTO {
     private Set<String> wardrobeIds;
     private List<String> outfitIds;
     
-    public Clothing toEntity(){
-        Set<Wardrobe> wardrobes = new HashSet<>();
-        
-        List<Outfit> outfits = new ArrayList<>();
+    public Clothing toEntity(Set<Wardrobe> wardrobes, List<Outfit> outfits){
         Clothing clothing = new Clothing(id,name,color,size,wardrobes,outfits);
         return clothing;
     }

@@ -66,4 +66,9 @@ public class OutfitController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    public Outfit getOutfitEntityById(String id) {
+        Outfit outfit = outfitService.getOutfitById(id);
+        return outfit;
+    }
 }

@@ -66,4 +66,9 @@ public class WardrobeController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    public Wardrobe getWardrobeEntityById(String id) {
+        Wardrobe wardrobe = wardrobeService.getWardrobeById(id);
+        return wardrobe;
+    }
 }

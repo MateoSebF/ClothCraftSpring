@@ -1,13 +1,19 @@
 package co.edu.escuelaing.cvds.ClothCraft.controller;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.Calendary;
+import co.edu.escuelaing.cvds.ClothCraft.model.Day;
+import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.CalendaryDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
+import co.edu.escuelaing.cvds.ClothCraft.service.DayService;
+import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +23,10 @@ public class CalendaryController {
 
     @Autowired
     private CalendaryService calendaryService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private DayService dayService;
 
     @GetMapping("/{id}")
     public ResponseEntity<CalendaryDTO> getCalendaryById(@PathVariable String id) {
@@ -37,10 +47,10 @@ public class CalendaryController {
         return new ResponseEntity<>(calendaryDTOList, HttpStatus.OK);
     }
 
-    /* 
     @PostMapping
     public ResponseEntity<CalendaryDTO> createCalendary(@RequestBody CalendaryDTO calendaryDTO) {
-        Calendary calendary = calendaryService.createCalendary(calendaryDTO.toEntity());
+        Calendary calendary = convertToObject(calendaryDTO);
+        calendary = calendaryService.createCalendary(calendary);
         if (calendary != null) {
             return new ResponseEntity<>(calendary.toDTO(), HttpStatus.CREATED);
         } else {
@@ -50,13 +60,14 @@ public class CalendaryController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CalendaryDTO> updateCalendary(@PathVariable String id, @RequestBody CalendaryDTO calendaryDTO) {
-        Calendary updatedCalendary = calendaryService.updateCalendary(id, calendaryDTO.toEntity());
-        if (updatedCalendary != null) {
-            return new ResponseEntity<>(updatedCalendary.toDTO(), HttpStatus.OK);
+        Calendary calendary = convertToObject(calendaryDTO);
+        calendary = calendaryService.updateCalendary(id, calendary);
+        if (calendary != null) {
+            return new ResponseEntity<>(calendary.toDTO(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }*/
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCalendary(@PathVariable String id) {
@@ -66,5 +77,12 @@ public class CalendaryController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+    private Calendary convertToObject(CalendaryDTO calendaryDTO) {
+        User user =  userService.getUserById(calendaryDTO.getUserId());
+        List<Day> days = new ArrayList<>();
+        for (String daysId : calendaryDTO.getDayIds()) days.add(dayService.getDayById(daysId));
+        Calendary calendary = calendaryService.createCalendary(calendaryDTO.toEntity(user, days));
+        return calendary;
     }
 }
