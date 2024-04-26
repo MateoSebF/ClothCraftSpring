@@ -1,33 +1,23 @@
 package co.edu.escuelaing.cvds.ClothCraft.model;
 
-import jakarta.persistence.CascadeType;
-
+import java.util.HashSet;
 import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 import jakarta.persistence.*;
 import lombok.*;
-
-import co.edu.escuelaing.cvds.ClothCraft.model.User;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.WardrobeDTO;
 
 /**
  * User
  */
-@SuppressWarnings("unused")
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "Wardrobe")
-@JsonIdentityInfo(generator =  ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Wardrobe {
     @Id
-    @Column(name = "id", nullable = false,  unique =     true)
+    @Column(name = "id", nullable = false,  unique = true)
     private String id;
 
     @OneToOne
@@ -40,8 +30,18 @@ public class Wardrobe {
     inverseJoinColumns = @JoinColumn(name = "clothing_id"))
     private Set<Clothing> clothes;
 
+    
+
+	public WardrobeDTO toDTO() {
+        Set<String> clothesIds = new HashSet<>();
+        for (Clothing clothing : clothes) {
+            clothesIds.add(clothing.getId());
+        }
+        return new WardrobeDTO(id, user.getId(), clothesIds);
+    }
+
     @Override
     public String toString(){
-        return "Wardrobe{" + "id='" + id + '\'' + ", user_id='" + user + '\'' +'}';
+        return toDTO().toString();
     }
 }

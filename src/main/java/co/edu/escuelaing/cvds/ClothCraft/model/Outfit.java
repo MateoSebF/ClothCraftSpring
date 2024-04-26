@@ -1,7 +1,8 @@
 package co.edu.escuelaing.cvds.ClothCraft.model;
 
-
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +12,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.*;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.OutfitDTO;
 
 @Getter
 @Setter
@@ -37,4 +39,18 @@ public class Outfit {
     joinColumns = @JoinColumn(name = "outfit_id"),
     inverseJoinColumns = @JoinColumn(name = "clothing_id"))
     private List<Clothing> clothes;
+    
+    
+    
+	public OutfitDTO toDTO() {
+        List<String> clothesIds = clothes.stream()
+                                        .map(Clothing::getId)
+                                        .collect(Collectors.toList());
+
+        return new OutfitDTO(id, name, category, clothesIds);
+    }
+    @Override
+    public String toString(){
+        return toDTO().toString();
+    }
 }

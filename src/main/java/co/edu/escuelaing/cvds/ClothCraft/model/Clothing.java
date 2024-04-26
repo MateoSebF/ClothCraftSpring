@@ -1,17 +1,14 @@
 
 package co.edu.escuelaing.cvds.ClothCraft.model;
 
-
-
 import java.util.Set;
+import java.util.stream.Collectors;
+
 
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 import jakarta.persistence.*;
 import lombok.*;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.ClothingDTO;
 
 /**
  * Clothing
@@ -22,7 +19,6 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "Clothing")
-@JsonIdentityInfo(generator =  ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Clothing {
     @Id
     @Column(name = "id", nullable = false,  unique = true)
@@ -31,10 +27,9 @@ public class Clothing {
     @Column(name = "name")
     private String name;
     
-    /* 
     @Lob
-    @Column(name = "Image", nullable = false)
-    private byte[] image;*/
+    @Column(name = "image", nullable = false, columnDefinition = "BLOB")
+    private byte[] image;
 
     @Column(name = "color", nullable = false)
     private String color;
@@ -43,8 +38,25 @@ public class Clothing {
     private String size;
 
     @ManyToMany(mappedBy = "clothes")
-    private Set<Wardrobe> wardrobe;
+    private Set<Wardrobe> wardrobes;
 
     @ManyToMany(mappedBy = "clothes")
     private List<Outfit> outfits;
+    
+    
+	public ClothingDTO toDTO() {
+        Set<String> wardrobeIds = wardrobes.stream()
+                                          .map(Wardrobe::getId)
+                                          .collect(Collectors.toSet());
+
+        List<String> outfitIds = outfits.stream()
+                                       .map(Outfit::getId)
+                                       .collect(Collectors.toList());
+
+        return new ClothingDTO(id, name, image, color, size, wardrobeIds, outfitIds);
+    }
+    @Override
+    public String toString(){
+        return toDTO().toString();
+    }
 }

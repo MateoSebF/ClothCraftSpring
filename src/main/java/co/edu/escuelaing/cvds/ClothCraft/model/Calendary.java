@@ -1,6 +1,8 @@
 package co.edu.escuelaing.cvds.ClothCraft.model;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -10,10 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.CalendaryDTO;
 
 @Getter
 @Setter
@@ -33,4 +33,20 @@ public class Calendary {
 
     @OneToMany(mappedBy = "calendary", cascade = CascadeType.ALL)
     private List<Day> days;
+
+    public CalendaryDTO toDTO() {
+        List<String> dayIds = days.stream()
+                                 .map(Day::getId)
+                                 .collect(Collectors.toList());
+
+        return new CalendaryDTO(id, user.getId(), dayIds);
+    }
+    
+
+
+
+	@Override
+    public String toString(){
+        return toDTO().toString();
+    }
 }
