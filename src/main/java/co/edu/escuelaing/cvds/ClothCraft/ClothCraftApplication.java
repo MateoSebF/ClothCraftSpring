@@ -1,11 +1,11 @@
 package co.edu.escuelaing.cvds.ClothCraft;
 
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
+//import java.nio.file.Files;
+//import java.nio.file.Path;
+//import java.nio.file.Paths;
+//import java.util.ArrayList;
+//import java.util.HashSet;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 import lombok.extern.slf4j.Slf4j;
 
-import co.edu.escuelaing.cvds.ClothCraft.model.*;
+//import co.edu.escuelaing.cvds.ClothCraft.model.*;
 import co.edu.escuelaing.cvds.ClothCraft.repository.ClothingRepository;
 import co.edu.escuelaing.cvds.ClothCraft.repository.WardrobeRepository;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
@@ -24,15 +24,15 @@ import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 @Slf4j
 public class ClothCraftApplication {
 	private final UserService userService;
-	private final WardrobeRepository wardrobeRepository;
-	private final ClothingRepository clothingRepository;
+	//private final WardrobeRepository wardrobeRepository;
+	//private final ClothingRepository clothingRepository;
 
 	public ClothCraftApplication(UserService userService, 
 	WardrobeRepository wardrobeRepository,
 	ClothingRepository clothingRepository){
 		this.userService = userService;
-		this.wardrobeRepository = wardrobeRepository;
-		this.clothingRepository = clothingRepository; 
+		//this.wardrobeRepository = wardrobeRepository;
+		//this.clothingRepository = clothingRepository; 
 	}
 	
 	public static void main(String[] args) {
@@ -42,17 +42,16 @@ public class ClothCraftApplication {
 	@Bean
 	public CommandLineRunner run() {
 		return (args) -> {
+			/* 
 			log.info("Adding Users....");
-			User user1 = new User("1a2b3c4d", "Juan Perez", "juan@example.com", "password123",null,null);
+			User user1 = new User("Juan Perez", "juan@example.com", "password123",null,null);
 			userService.createUser(user1);
-			User user2 = new User("e5f6g7h8", "María García", "maria@example.com", "password123",null,null);
+			User user2 = new User("María García", "maria@example.com", "password123",null,null);
 			userService.createUser(user2);
-			User user3 = new User("i9j0k1l2", "Carlos Rodríguez", "carlos@example.com", "password123",null,null);
+			User user3 = new User("Carlos Rodríguez", "carlos@example.com", "password123",null,null);
 			userService.createUser(user3);
 
 			String imagePath = "images/img1.jpg";
-			Path absolutePath = Paths.get(imagePath).toAbsolutePath();
-			System.out.println("Ruta absoluta del archivo: " + absolutePath);
 
 			byte[] imageBytes = Files.readAllBytes(Paths.get("images/img1.jpg"));
 			log.info("Adding Clothes....");
@@ -86,7 +85,7 @@ public class ClothCraftApplication {
 			wardrobes.add(wardrobe3);
 			clothing1.setWardrobe(wardrobes);
 			clothingRepository.save(clothing1);
-
+			*/
 			log.info("\nGetting all users....");
 			userService.getAllUsers().forEach(user -> System.out.println(user));
 		};

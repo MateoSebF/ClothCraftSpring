@@ -38,14 +38,14 @@ public class Clothing {
     private String size;
 
     @ManyToMany(mappedBy = "clothes")
-    private Set<Wardrobe> wardrobe;
+    private Set<Wardrobe> wardrobes;
 
     @ManyToMany(mappedBy = "clothes")
     private List<Outfit> outfits;
     
     
 	public ClothingDTO toDTO() {
-        Set<String> wardrobeIds = wardrobe.stream()
+        Set<String> wardrobeIds = wardrobes.stream()
                                           .map(Wardrobe::getId)
                                           .collect(Collectors.toSet());
 
