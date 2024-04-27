@@ -9,6 +9,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.*;
 
+
 import org.hibernate.annotations.GenericGenerator;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
@@ -38,6 +39,9 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "username", nullable = false)
+    private String username;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Wardrobe wardrobe;
     
@@ -45,9 +49,10 @@ public class User {
     private Calendary calendary;
 
 
-    public User(String name, String email, String password, Wardrobe wardrobe, Calendary calendary) {
+    public User(String name, String email, String username, String password,  Wardrobe wardrobe, Calendary calendary) {
         this.name = name;
         this.email = email;
+        this.username = username;
         this.password = password;
         this.wardrobe = wardrobe;
         this.calendary = calendary;
@@ -55,7 +60,7 @@ public class User {
     
 
 	public UserDTO toDTO() {
-        return new UserDTO(id, name, email, password,
+        return new UserDTO(id, name, email, password, username,
             wardrobe != null ? wardrobe.getId() : null,
             calendary != null ? calendary.getId() : null);
     }
