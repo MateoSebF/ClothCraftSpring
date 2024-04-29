@@ -1,7 +1,7 @@
 package co.edu.escuelaing.cvds.ClothCraft;
 
 
-import co.edu.escuelaing.cvds.ClothCraft.model.User;
+//import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+//import java.nio.file.*;
 
 @SpringBootApplication
 @Slf4j
@@ -31,10 +30,10 @@ public class ClothCraftApplication {
 	@Bean
 	public CommandLineRunner run() {
 		return (args) -> {
-			String imagePath = "images/profile.png";
+			/*String imagePath = "images/profile.png";
 
 			byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
-			/*
+			
 			for(User user : userService.getAllUsers()) {
 				String userId = user.getId();
 				user.setPhotoProfile(imageBytes);
