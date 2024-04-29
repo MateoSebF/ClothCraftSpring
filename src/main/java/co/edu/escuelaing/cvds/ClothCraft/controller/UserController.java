@@ -10,9 +10,13 @@ import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,11 +31,64 @@ public class UserController {
     @Autowired
     private CalendaryService calendaryService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable String id) {
         User user = userService.getUserById(id);
         if (user != null) {
             return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/{uniqueKey}")
+    public ResponseEntity<UserDTO> getUserByUniqueKey(@PathVariable String uniqueKey) {
+        ResponseEntity<UserDTO> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        User user = userService.getUserById(uniqueKey);
+        if (user == null) user = userService.getUserByEmail(uniqueKey);
+        if (user == null) user = userService.getUserByUserName(uniqueKey);
+        if (user != null) response = new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
+        return response;
+    }
+    @GetMapping("/photoProfile/{uniqueKey}")
+    public ResponseEntity<byte[]> getPhotoProfileByUniqueKey(@PathVariable String uniqueKey) {
+        ResponseEntity<byte[]> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        byte[] photoProfile;
+        User user = userService.getUserById(uniqueKey);
+        if (user == null) user = userService.getUserByEmail(uniqueKey);
+        if (user == null) user = userService.getUserByUserName(uniqueKey);
+        if (user != null) {
+            photoProfile = user.getPhotoProfile();
+            response = ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(photoProfile);
+        }
+        return response;
+    }
+    @GetMapping("/id/photoProfile/{id}")
+    public ResponseEntity<byte[]> getPhotoProfileById(@PathVariable String id) {
+        User user = userService.getUserById(id);
+        if (user != null) {
+            byte[] photoProfile = user.getPhotoProfile();
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(photoProfile);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/email/photoProfile/{email}")
+    public ResponseEntity<byte[]> getPhotoProfileByEmail(@PathVariable String email) {
+        User user = userService.getUserByEmail(email);
+        if (user != null) {
+            byte[] photoProfile = user.getPhotoProfile();
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(photoProfile);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/username/photoProfile/{username}")
+    public ResponseEntity<byte[]> getPhotoProfileByUserName(@PathVariable String username) {
+        User user = userService.getUserByUserName(username);
+        if (user != null) {
+            byte[] photoProfile = user.getPhotoProfile();
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(photoProfile);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -48,7 +105,10 @@ public class UserController {
 
     
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) throws IOException {
+        String imagePath = "images/profile.png";
+        byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
+        userDTO.setPhotoProfile(imageBytes);
         User user = userService.createUser(convertToObject(userDTO));
         if (user != null) {
             return new ResponseEntity<>(user.toDTO(), HttpStatus.CREATED);

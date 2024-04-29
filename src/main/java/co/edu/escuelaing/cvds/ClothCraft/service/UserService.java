@@ -44,4 +44,8 @@ public class UserService {
             return false;
         }
     }
+
+    public User getUserByEmail(String email) {return userRepository.findByEmail(email).orElse(null);}
+
+    public User getUserByUserName(String username) {return userRepository.findByUsername(username).orElse(null);}
 }

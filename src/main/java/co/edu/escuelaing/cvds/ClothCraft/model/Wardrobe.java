@@ -44,4 +44,9 @@ public class Wardrobe {
     public String toString(){
         return toDTO().toString();
     }
+
+    public String getId() {
+        return id;
+    }
+
 }

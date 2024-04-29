@@ -43,7 +43,9 @@ public class Calendary {
     }
     
 
-
+    public String getId() {
+        return id;
+    }
 
 	@Override
     public String toString(){

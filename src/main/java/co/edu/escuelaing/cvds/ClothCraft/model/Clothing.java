@@ -59,4 +59,8 @@ public class Clothing {
     public String toString(){
         return toDTO().toString();
     }
+
+    public String getId() {
+        return id;
+    }
 }
