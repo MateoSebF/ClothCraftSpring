@@ -1,12 +1,15 @@
 package co.edu.escuelaing.cvds.ClothCraft.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.GenericGenerator;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -24,6 +27,8 @@ import co.edu.escuelaing.cvds.ClothCraft.model.DTO.CalendaryDTO;
 public class Calendary {
 
     @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(name = "id", nullable = false, unique = true)
     private String id;
 
@@ -34,17 +39,17 @@ public class Calendary {
     @OneToMany(mappedBy = "calendary", cascade = CascadeType.ALL)
     private List<Day> days;
 
+    public Calendary(User user) {
+        this.user = user;
+        this.days = new ArrayList<>();
+    }
+    
     public CalendaryDTO toDTO() {
         List<String> dayIds = days.stream()
                                  .map(Day::getId)
                                  .collect(Collectors.toList());
 
         return new CalendaryDTO(id, user.getId(), dayIds);
-    }
-    
-
-    public String getId() {
-        return id;
     }
 
 	@Override

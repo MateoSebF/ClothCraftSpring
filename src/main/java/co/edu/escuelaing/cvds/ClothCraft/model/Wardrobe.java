@@ -1,7 +1,12 @@
 package co.edu.escuelaing.cvds.ClothCraft.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import org.hibernate.annotations.GenericGenerator;
+
 import jakarta.persistence.*;
 import lombok.*;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.WardrobeDTO;
@@ -17,11 +22,16 @@ import co.edu.escuelaing.cvds.ClothCraft.model.DTO.WardrobeDTO;
 @Table(name = "Wardrobe")
 public class Wardrobe {
     @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(name = "id", nullable = false,  unique = true)
     private String id;
 
+    @Column(name = "layers")
+    private List<ClothingType> layers;
+
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
 
     @ManyToMany
@@ -30,7 +40,18 @@ public class Wardrobe {
     inverseJoinColumns = @JoinColumn(name = "clothing_id"))
     private Set<Clothing> clothes;
 
-    
+    public Wardrobe(String id, User user, Set<Clothing> clothes) {
+        this.id = id;
+        this.layers = new ArrayList<>();
+        layers.add(ClothingType.SHIRT);
+        layers.add(ClothingType.PANTS);
+        this.user = user;
+        this.clothes = clothes;
+    }
+    public Wardrobe(User user) {
+        this.user = user;
+        this.clothes = new HashSet<>();
+    }
 
 	public WardrobeDTO toDTO() {
         Set<String> clothesIds = new HashSet<>();
@@ -45,8 +66,18 @@ public class Wardrobe {
         return toDTO().toString();
     }
 
-    public String getId() {
-        return id;
+    public void addClothing(Clothing clothing) {
+        clothes.add(clothing);
+    }
+    public List<Clothing> getAllClothingByType(String type) {
+        List<Clothing> clothingList = new ArrayList<>();
+        ClothingType clothingType = ClothingType.valueOf(type);
+        for (Clothing clothing : clothes) {
+            if (clothing.getType().equals(clothingType)) {
+                clothingList.add(clothing);
+            }
+        }
+        return clothingList;
     }
 
 }

@@ -16,7 +16,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.UUID;
 
-
+@SuppressWarnings("null")
 @Slf4j
 @Component
 public class BasicAuthInterceptor implements HandlerInterceptor {

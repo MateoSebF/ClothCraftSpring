@@ -3,13 +3,18 @@ package co.edu.escuelaing.cvds.ClothCraft.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.*;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 
+
 /**
- * User
+ * Represents a User in the ClothCraft application.
+ * 
+ * This class contains information about a user, such as their name, email, password, username, photo profile, wardrobe, and calendary.
+ * It also provides methods to convert the User object to a UserDTO object and to retrieve a string representation of the User object.
  */
 @Setter
 @Getter
@@ -47,18 +52,22 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Calendary calendary;
 
-    public User(String name, String email, String username,
-                String password, byte[] photoProfile,
+    public User(String name, String email, String password, 
+                String username, byte[] photoProfile,
                 Wardrobe wardrobe, Calendary calendary) {
         this.name = name;
         this.email = email;
-        this.username = username;
         this.password = password;
+        this.username = username;
         this.photoProfile = photoProfile;
         this.wardrobe = wardrobe;
         this.calendary = calendary;
     }
     
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 
 	public UserDTO toDTO() {
         return new UserDTO(id, name, email, password, username,  photoProfile,
@@ -71,8 +80,12 @@ public class User {
         return toDTO().toString();
     }
 
-    public User(String email, String password) {
-        this.email = email;
-        this.password = password;
+    public Set<Clothing> getAllClothing() {
+        return wardrobe.getClothes();
     }
+
+    public List<Clothing> getAllClothingByType(String type) {
+        return wardrobe.getAllClothingByType(type);
+    }
+
 }

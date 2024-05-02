@@ -1,5 +1,6 @@
 package co.edu.escuelaing.cvds.ClothCraft.service;
 
+import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 import co.edu.escuelaing.cvds.ClothCraft.repository.WardrobeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +44,9 @@ public class WardrobeService {
         } else {
             return false;
         }
+    }
+
+    public Wardrobe getWardrobeByUser(User user) {
+        return wardrobeRepository.findByUser(user).orElse(null);
     }
 }

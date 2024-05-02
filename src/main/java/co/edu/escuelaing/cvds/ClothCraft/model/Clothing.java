@@ -1,18 +1,24 @@
-
 package co.edu.escuelaing.cvds.ClothCraft.model;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 import jakarta.persistence.*;
 import lombok.*;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.ClothingDTO;
 
+
+
 /**
- * Clothing
+ * Represents a clothing item in the ClothCraft application.
+ * 
+ * This class contains information about a clothing item, such as its name, image, color, size, type of clothing and associated wardrobes and outfits.
+ * It also provides methods to convert the clothing item to a DTO (Data Transfer Object) and to retrieve its ID.
  */
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -21,6 +27,8 @@ import co.edu.escuelaing.cvds.ClothCraft.model.DTO.ClothingDTO;
 @Table(name = "Clothing")
 public class Clothing {
     @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(name = "id", nullable = false,  unique = true)
     private String id;
     
@@ -37,6 +45,9 @@ public class Clothing {
     @Column(name = "size")
     private String size;
 
+    @Column(name = "type")
+    private ClothingType type;
+ 
     @ManyToMany(mappedBy = "clothes")
     private Set<Wardrobe> wardrobes;
 
@@ -53,14 +64,11 @@ public class Clothing {
                                        .map(Outfit::getId)
                                        .collect(Collectors.toList());
 
-        return new ClothingDTO(id, name, image, color, size, wardrobeIds, outfitIds);
+        return new ClothingDTO(id, name, image, color, size, type , wardrobeIds, outfitIds);
     }
     @Override
     public String toString(){
         return toDTO().toString();
     }
 
-    public String getId() {
-        return id;
-    }
 }

@@ -28,7 +28,7 @@ public class UserDTO{
     public User toEntity(Wardrobe wardrobe, Calendary calendary){
         String hashedPassword = hashPassword(password);
 
-        User user = new User(id, name, email, hashedPassword, photoProfile, wardrobe, calendary);
+        User user = new User(name, email, hashedPassword, username, photoProfile, wardrobe, calendary);
 
         return user;
     }
