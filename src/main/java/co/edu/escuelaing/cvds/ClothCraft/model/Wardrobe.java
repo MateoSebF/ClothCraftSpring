@@ -73,9 +73,14 @@ public class Wardrobe {
         List<Clothing> clothingList = new ArrayList<>();
         ClothingType clothingType = ClothingType.valueOf(type);
         for (Clothing clothing : clothes) {
-            if (clothing.getType().equals(clothingType)) {
-                clothingList.add(clothing);
+            try{
+                if (clothing.getType().equals(clothingType)) {
+                    clothingList.add(clothing);
+                }
+            } catch (Exception e){
+                
             }
+            
         }
         return clothingList;
     }
