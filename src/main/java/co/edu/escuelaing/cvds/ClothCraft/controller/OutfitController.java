@@ -23,6 +23,7 @@ public class OutfitController {
     @Autowired
     private ClothingService clothingService;
 
+    
     @GetMapping("/{id}")
     public ResponseEntity<OutfitDTO> getOutfitById(@PathVariable String id) {
         Outfit outfit = outfitService.getOutfitById(id);
