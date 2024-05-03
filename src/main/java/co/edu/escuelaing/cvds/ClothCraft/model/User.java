@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.*;
 
+
 import org.hibernate.annotations.GenericGenerator;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
@@ -39,6 +40,7 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+
     @Column(name = "username", unique = true, nullable = false)
     private String username;
 
@@ -55,8 +57,10 @@ public class User {
     public User(String name, String email, String password, 
                 String username, byte[] photoProfile,
                 Wardrobe wardrobe, Calendary calendary) {
+
         this.name = name;
         this.email = email;
+        this.username = username;
         this.password = password;
         this.username = username;
         this.photoProfile = photoProfile;
