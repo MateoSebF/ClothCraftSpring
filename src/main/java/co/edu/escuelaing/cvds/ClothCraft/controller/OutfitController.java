@@ -1,5 +1,6 @@
 package co.edu.escuelaing.cvds.ClothCraft.controller;
 
+import co.edu.escuelaing.cvds.ClothCraft.model.Category;
 import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.OutfitDTO;
@@ -23,7 +24,7 @@ public class OutfitController {
     @Autowired
     private ClothingService clothingService;
 
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<OutfitDTO> getOutfitById(@PathVariable String id) {
         Outfit outfit = outfitService.getOutfitById(id);
@@ -32,6 +33,16 @@ public class OutfitController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<String>> getCategories() {
+        List<String> categories = new ArrayList<>();
+        for (Category category : Category.values()) {
+            categories.add(category.toString());
+        }
+        return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
     @GetMapping("/all")

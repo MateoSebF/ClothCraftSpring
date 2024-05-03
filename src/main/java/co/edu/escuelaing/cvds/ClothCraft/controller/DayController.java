@@ -3,10 +3,12 @@ package co.edu.escuelaing.cvds.ClothCraft.controller;
 import co.edu.escuelaing.cvds.ClothCraft.model.Calendary;
 import co.edu.escuelaing.cvds.ClothCraft.model.Day;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
+import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.DayDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
 import co.edu.escuelaing.cvds.ClothCraft.service.DayService;
 import co.edu.escuelaing.cvds.ClothCraft.service.OutfitService;
+import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,8 @@ public class DayController {
     private CalendaryService calendaryService;
     @Autowired
     private OutfitService outfitService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<DayDTO> getDayById(@PathVariable String id) {
@@ -50,6 +54,20 @@ public class DayController {
     public ResponseEntity<DayDTO> createDay(@RequestBody DayDTO dayDTO) {
         Day day = dayService.createDay(convertToObject(dayDTO));
         if (day != null) {
+            return new ResponseEntity<>(day.toDTO(), HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/user/{userId}")
+    public ResponseEntity<DayDTO> createOutfitForUserAndDay(@PathVariable String userId,
+                                                        @RequestBody DayDTO dayDTO) {
+        User user = userService.getUserById(userId);
+        if (user != null) {
+            Day day = convertToObject(dayDTO);
+            day.setCalendary(user.getCalendary());
+            day = dayService.createDay(day);
             return new ResponseEntity<>(day.toDTO(), HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
