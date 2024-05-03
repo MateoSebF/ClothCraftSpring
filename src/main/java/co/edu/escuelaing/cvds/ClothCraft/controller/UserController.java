@@ -1,8 +1,10 @@
 package co.edu.escuelaing.cvds.ClothCraft.controller;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.Calendary;
+import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.ClothingDTO;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
@@ -10,10 +12,15 @@ import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,7 +34,7 @@ public class UserController {
     @Autowired
     private CalendaryService calendaryService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable String id) {
         User user = userService.getUserById(id);
         if (user != null) {
@@ -35,6 +42,49 @@ public class UserController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/{uniqueKey}")
+    public ResponseEntity<UserDTO> getUserByUniqueKey(@PathVariable String uniqueKey) {
+        ResponseEntity<UserDTO> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        User user = null;
+        if (user == null)
+            user = userService.getUserByEmail(uniqueKey);
+        if (user == null)
+            user = userService.getUserByUserName(uniqueKey);
+        if (user != null)
+            response = new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
+        return response;
+    }
+
+    @GetMapping("/photoProfile/{uniqueKey}")
+    public ResponseEntity<byte[]> getPhotoProfileByUniqueKey(@PathVariable String uniqueKey) {
+        ResponseEntity<byte[]> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        byte[] photoProfile;
+        User user = null;
+        if (user == null)
+            user = userService.getUserByEmail(uniqueKey);
+        if (user == null)
+            user = userService.getUserByUserName(uniqueKey);
+        if (user != null) {
+            photoProfile = user.getPhotoProfile();
+            response = ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(photoProfile);
+        }
+        return response;
+    }
+
+    @GetMapping("/clothings/{id}")
+    public ResponseEntity<List<ClothingDTO>> getClothingsByUniqueKey(@PathVariable String id) {
+        ResponseEntity<List<ClothingDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        User user = userService.getUserById(id);
+        if (user != null) {
+            Set<Clothing> clothingList = user.getAllClothing();
+            List<ClothingDTO> clothingDTOList = clothingList.stream()
+                    .map(Clothing::toDTO)
+                    .collect(Collectors.toList());
+            response = new ResponseEntity<List<ClothingDTO>>(clothingDTOList, HttpStatus.OK);
+        }
+        return response;
     }
 
     @GetMapping("/all")
@@ -46,10 +96,25 @@ public class UserController {
         return new ResponseEntity<>(userDTOList, HttpStatus.OK);
     }
 
-    
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        User user = userService.createUser(convertToObject(userDTO));
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) throws IOException {
+        System.out.println("Creating user:" + userDTO.toString());
+        String imagePath = "images/profile.png";
+        byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
+        userDTO.setPhotoProfile(imageBytes);
+        User user = convertToObject(userDTO);
+
+        Wardrobe wardrobe = new Wardrobe(user);
+
+        Calendary calendary = new Calendary(user);
+
+        user = userService.createUser(user);
+        wardrobeService.createWardrobe(wardrobe);
+        calendaryService.createCalendary(calendary);
+
+        user.setWardrobe(wardrobe);
+        user.setCalendary(calendary);
+        user = userService.updateUser(user.getId(), user);
         if (user != null) {
             return new ResponseEntity<>(user.toDTO(), HttpStatus.CREATED);
         } else {
@@ -78,8 +143,11 @@ public class UserController {
     }
 
     private User convertToObject(UserDTO userDTO) {
-        Wardrobe wardrobe = userDTO.getWardrobeId() != null ? wardrobeService.getWardrobeById(userDTO.getWardrobeId()) : null;
-        Calendary calendary = userDTO.getCalendaryId() != null ? calendaryService.getCalendaryById(userDTO.getCalendaryId()) : null;
-        return userDTO.toEntity(wardrobe,calendary);
+        Wardrobe wardrobe = userDTO.getWardrobeId() != null ? wardrobeService.getWardrobeById(userDTO.getWardrobeId())
+                : null;
+        Calendary calendary = userDTO.getCalendaryId() != null
+                ? calendaryService.getCalendaryById(userDTO.getCalendaryId())
+                : null;
+        return userDTO.toEntity(wardrobe, calendary);
     }
 }

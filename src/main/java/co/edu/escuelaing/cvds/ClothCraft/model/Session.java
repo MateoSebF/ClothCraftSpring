@@ -24,4 +24,15 @@ public class Session {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public Session(User user){
+        this.token = UUID.randomUUID();
+        this.timestamp = Instant.now();
+        this.user = user;
+    }
+
+
+    public UUID getToken() {
+        return token;
+    }
 }

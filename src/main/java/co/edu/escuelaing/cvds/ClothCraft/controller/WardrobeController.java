@@ -49,10 +49,7 @@ public class WardrobeController {
     
     @PostMapping
     public ResponseEntity<WardrobeDTO> createWardrobe(@RequestBody WardrobeDTO wardrobeDTO) {
-        System.out.println(wardrobeDTO.getUserId());
         Wardrobe wardrobe = wardrobeService.createWardrobe(convertToObject(wardrobeDTO));
-        System.out.println("wardrobe:");
-        System.out.println(wardrobe);
         if (wardrobe != null) {
             return new ResponseEntity<>(wardrobe.toDTO(), HttpStatus.CREATED);
         } else {

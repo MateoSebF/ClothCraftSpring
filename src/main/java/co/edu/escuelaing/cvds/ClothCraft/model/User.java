@@ -1,21 +1,21 @@
 package co.edu.escuelaing.cvds.ClothCraft.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.*;
 
 
 import org.hibernate.annotations.GenericGenerator;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 
+
 /**
- * User
+ * Represents a User in the ClothCraft application.
+ * 
+ * This class contains information about a user, such as their name, email, password, username, photo profile, wardrobe, and calendary.
+ * It also provides methods to convert the User object to a UserDTO object and to retrieve a string representation of the User object.
  */
 @Setter
 @Getter
@@ -23,6 +23,7 @@ import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 @AllArgsConstructor
 @Entity
 @Table(name = "User")
+
 public class User {
     @Id
     @GeneratedValue(generator = "uuid")
@@ -39,8 +40,13 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "username", nullable = false)
+
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
+
+    @Lob
+    @Column(name = "photo", nullable = false, columnDefinition = "BLOB")
+    private byte[] photoProfile;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Wardrobe wardrobe;
@@ -48,19 +54,27 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Calendary calendary;
 
+    public User(String name, String email, String password, 
+                String username, byte[] photoProfile,
+                Wardrobe wardrobe, Calendary calendary) {
 
-    public User(String name, String email, String username, String password,  Wardrobe wardrobe, Calendary calendary) {
         this.name = name;
         this.email = email;
         this.username = username;
         this.password = password;
+        this.username = username;
+        this.photoProfile = photoProfile;
         this.wardrobe = wardrobe;
         this.calendary = calendary;
     }
     
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 
 	public UserDTO toDTO() {
-        return new UserDTO(id, name, email, password, username,
+        return new UserDTO(id, name, email, password, username,  photoProfile,
             wardrobe != null ? wardrobe.getId() : null,
             calendary != null ? calendary.getId() : null);
     }
@@ -69,4 +83,13 @@ public class User {
     public String toString(){
         return toDTO().toString();
     }
+
+    public Set<Clothing> getAllClothing() {
+        return wardrobe.getClothes();
+    }
+
+    public List<Clothing> getAllClothingByType(String type) {
+        return wardrobe.getAllClothingByType(type);
+    }
+
 }
