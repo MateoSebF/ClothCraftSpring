@@ -17,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -107,8 +106,12 @@ public class UserController {
     public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
         try {
             log.info("Initial userDTO received: " + userDTO.toString());
-            log.info("The image was read");
-            String imagePath = "./images/profile.png";
+            log.info("The image was read"); 
+
+
+            String currentDirectory = System.getProperty("user.dir");
+            String imagePath = currentDirectory + "/images/profile.png";
+            log.info("Image file path: " + Paths.get(imagePath).toAbsolutePath());
             byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
             userDTO.setPhotoProfile(imageBytes);
             User user = convertToObject(userDTO);
