@@ -9,6 +9,7 @@ import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -96,25 +98,32 @@ public class UserController {
         return new ResponseEntity<>(userDTOList, HttpStatus.OK);
     }
 
+    /*
+     * Method used to create a new user assigning a new wardrobe and a calendary
+     * 
+     * @param userDTO the user to be created
+     */
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) throws IOException {
-        System.out.println("Creating user:" + userDTO.toString());
+        log.info(userDTO.toString());
         String imagePath = "images/profile.png";
         byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
         userDTO.setPhotoProfile(imageBytes);
         User user = convertToObject(userDTO);
-
+        // Create a wardrobe and a calendary for the user
         Wardrobe wardrobe = new Wardrobe(user);
-
         Calendary calendary = new Calendary(user);
-
+        // Save the user with a initial null wardrobe and calendary
         user = userService.createUser(user);
+        // Save the wardrobe and the calendary
         wardrobeService.createWardrobe(wardrobe);
         calendaryService.createCalendary(calendary);
-
+        // Update the user with the wardrobe and the calendary
         user.setWardrobe(wardrobe);
         user.setCalendary(calendary);
+        // Save the user with the wardrobe and the calendary
         user = userService.updateUser(user.getId(), user);
+        log.info(userDTO.toString());
         if (user != null) {
             return new ResponseEntity<>(user.toDTO(), HttpStatus.CREATED);
         } else {
