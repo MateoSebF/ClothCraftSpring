@@ -40,8 +40,8 @@ public class Wardrobe {
     inverseJoinColumns = @JoinColumn(name = "clothing_id"))
     private Set<Clothing> clothes;
 
-    public Wardrobe(String id, User user, Set<Clothing> clothes) {
-        this.id = id;
+
+    public Wardrobe(User user, Set<Clothing> clothes) {
         this.layers = new ArrayList<>();
         layers.add(ClothingType.SHIRT);
         layers.add(ClothingType.PANTS);
@@ -50,6 +50,9 @@ public class Wardrobe {
     }
     public Wardrobe(User user) {
         this.user = user;
+        this.layers = new ArrayList<>();
+        layers.add(ClothingType.SHIRT);
+        layers.add(ClothingType.PANTS);
         this.clothes = new HashSet<>();
     }
 
