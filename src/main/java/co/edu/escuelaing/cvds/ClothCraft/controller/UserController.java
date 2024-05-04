@@ -106,14 +106,6 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO){
         log.info("Initial userDTO recived" + userDTO.toString());
-        try{
-            String imagePath = "images/profile.png";
-            byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
-            userDTO.setPhotoProfile(imageBytes);
-        } catch (Exception e) {
-            log.error("Error reading the image" + e.getMessage());
-        }
-        
         log.info("The image was read" );
         User user = convertToObject(userDTO);
         log.info("The user was converted"+ user.toString());
