@@ -41,7 +41,8 @@ public class Wardrobe {
     private Set<Clothing> clothes;
 
 
-    public Wardrobe(User user, Set<Clothing> clothes) {
+    public Wardrobe(String id, User user, Set<Clothing> clothes) {
+	this.id = id;
         this.layers = new ArrayList<>();
         layers.add(ClothingType.SHIRT);
         layers.add(ClothingType.PANTS);
