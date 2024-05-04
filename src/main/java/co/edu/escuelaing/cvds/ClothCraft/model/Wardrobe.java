@@ -47,8 +47,9 @@ public class Wardrobe {
      * @param user the user that owns the wardrobe
      * @param clothes the clothes that the wardrobe has
      */
+
     public Wardrobe(String id, User user, Set<Clothing> clothes) {
-        this.id = id;
+	      this.id = id;
         this.layers = new ArrayList<>();
         layers.add(ClothingType.SHIRT);
         layers.add(ClothingType.PANTS);
