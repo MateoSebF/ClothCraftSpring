@@ -104,7 +104,7 @@ public class UserController {
      * @param userDTO the user to be created
      */
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
         try {
             log.info("Initial userDTO received: " + userDTO.toString());
             log.info("The image was read");
@@ -134,7 +134,7 @@ public class UserController {
             user = userService.updateUser(user.getId(), user);
             log.info("The user was updated: " + user.toString());
     
-            return new ResponseEntity<>(user.toDTO(), HttpStatus.CREATED);
+            return new ResponseEntity<>(user.toString(), HttpStatus.CREATED);
         } catch (Exception e) {
             // Captura cualquier excepción y devuelve un ResponseEntity con un mensaje de error
             String errorMessage = "An error occurred while processing the request: " + e.getMessage();
