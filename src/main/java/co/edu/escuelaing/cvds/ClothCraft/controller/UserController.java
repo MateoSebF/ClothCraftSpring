@@ -108,6 +108,9 @@ public class UserController {
         try {
             log.info("Initial userDTO received: " + userDTO.toString());
             log.info("The image was read");
+            String imagePath = "./images/profile.png";
+            byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
+            userDTO.setPhotoProfile(imageBytes);
             User user = convertToObject(userDTO);
             log.info("The user was converted: " + user.toString());
     
