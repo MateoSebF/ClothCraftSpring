@@ -19,6 +19,7 @@ co\edu\escuelaing\cvds\ClothCraft\model\Day.class
 co\edu\escuelaing\cvds\ClothCraft\model\Calendary.class
 co\edu\escuelaing\cvds\ClothCraft\model\DTO\DayDTO.class
 co\edu\escuelaing\cvds\ClothCraft\model\DTO\CalendaryDTO.class
+co\edu\escuelaing\cvds\ClothCraft\model\ClothingType.class
 co\edu\escuelaing\cvds\ClothCraft\service\UserService.class
 co\edu\escuelaing\cvds\ClothCraft\model\DTO\OutfitDTO.class
 co\edu\escuelaing\cvds\ClothCraft\repository\WardrobeRepository.class
