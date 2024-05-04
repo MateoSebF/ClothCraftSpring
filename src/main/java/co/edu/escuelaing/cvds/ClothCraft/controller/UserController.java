@@ -105,25 +105,31 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) throws IOException {
-        log.info(userDTO.toString());
+        log.info("Initial userDTO recived" + userDTO.toString());
         String imagePath = "images/profile.png";
         byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
         userDTO.setPhotoProfile(imageBytes);
+        log.info("The image was read" );
         User user = convertToObject(userDTO);
+        log.info("The user was converted"+ user.toString());
         // Create a wardrobe and a calendary for the user
         Wardrobe wardrobe = new Wardrobe(user);
         Calendary calendary = new Calendary(user);
+        log.info("The wardrobe and the calendary were created"+ wardrobe.toString() + calendary.toString());
         // Save the user with a initial null wardrobe and calendary
         user = userService.createUser(user);
+        log.info("The user was saved"+ user.toString());
         // Save the wardrobe and the calendary
         wardrobeService.createWardrobe(wardrobe);
         calendaryService.createCalendary(calendary);
+        log.info("The wardrobe and the calendary were saved"+ wardrobe.toString() + calendary.toString());
         // Update the user with the wardrobe and the calendary
         user.setWardrobe(wardrobe);
         user.setCalendary(calendary);
+        log.info("The user was updated"+ user.toString());
         // Save the user with the wardrobe and the calendary
         user = userService.updateUser(user.getId(), user);
-        log.info(userDTO.toString());
+        log.info("The user was updated"+ user.toString());
         if (user != null) {
             return new ResponseEntity<>(user.toDTO(), HttpStatus.CREATED);
         } else {
