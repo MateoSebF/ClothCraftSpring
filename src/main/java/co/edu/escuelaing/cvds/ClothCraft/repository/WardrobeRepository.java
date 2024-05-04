@@ -8,5 +8,5 @@ import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 @Repository
 public interface WardrobeRepository extends JpaRepository<Wardrobe, String>{
-    Optional<Wardrobe> findByUser(User user);
+    public Optional<Wardrobe> findByUser(User user);
 }

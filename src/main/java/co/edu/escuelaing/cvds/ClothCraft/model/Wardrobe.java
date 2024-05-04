@@ -40,15 +40,28 @@ public class Wardrobe {
     inverseJoinColumns = @JoinColumn(name = "clothing_id"))
     private Set<Clothing> clothes;
 
+    /*
+     * Constructor used to create a Wardrobe object from a WardrobeDTO object
+     * 
+     * @param wardrobeDTO the WardrobeDTO object
+     * @param user the user that owns the wardrobe
+     * @param clothes the clothes that the wardrobe has
+     */
 
     public Wardrobe(String id, User user, Set<Clothing> clothes) {
-	this.id = id;
+	      this.id = id;
         this.layers = new ArrayList<>();
         layers.add(ClothingType.SHIRT);
         layers.add(ClothingType.PANTS);
         this.user = user;
         this.clothes = clothes;
     }
+
+    /*
+     * Constructor used to create a Wardrobe object from a new user
+     * 
+     * @param user the user that owns the wardrobe
+     */
     public Wardrobe(User user) {
         this.user = user;
         this.layers = new ArrayList<>();

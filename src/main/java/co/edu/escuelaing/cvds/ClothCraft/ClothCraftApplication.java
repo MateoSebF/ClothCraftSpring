@@ -39,8 +39,7 @@ public class ClothCraftApplication {
 				user.setPhotoProfile(imageBytes);
 				userService.updateUser(userId,user);
 			}*/
-			log.info("\nGetting all users....");
-			userService.getAllUsers().forEach(System.out::println);
+			log.info("\nrunning the application...\n");
 		};
 	}
 

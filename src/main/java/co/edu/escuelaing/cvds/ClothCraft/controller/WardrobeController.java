@@ -86,6 +86,6 @@ public class WardrobeController {
         User user = wardrobeDTO.getUserId() != null ? userService.getUserById(wardrobeDTO.getUserId()) : null;
         Set<Clothing> clothings = new HashSet<>();
         for (String clothingId: wardrobeDTO.getClothesIds()) clothings.add(clothingService.getClothingById(clothingId));
-        return wardrobeDTO.toEntity(user,clothings);
+        return wardrobeDTO.toEntity(wardrobeDTO.getId(),user,clothings);
     }
 }
