@@ -1,6 +1,7 @@
 package co.edu.escuelaing.cvds.ClothCraft.controller;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
+import co.edu.escuelaing.cvds.ClothCraft.model.ClothingType;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.WardrobeDTO;
@@ -45,6 +46,16 @@ public class WardrobeController {
                 .map(Wardrobe::toDTO)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(wardrobeDTOList, HttpStatus.OK);
+    }
+    
+    @GetMapping("/{id}/layers")
+    public ResponseEntity<List<String>> getLayers(@PathVariable String id) {
+        Wardrobe wardrobe = wardrobeService.getWardrobeById(id);
+        if (wardrobe != null) {
+            return new ResponseEntity<>(wardrobe.getLayers().stream().map(ClothingType::name).collect(Collectors.toList()), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
     
     @PostMapping
