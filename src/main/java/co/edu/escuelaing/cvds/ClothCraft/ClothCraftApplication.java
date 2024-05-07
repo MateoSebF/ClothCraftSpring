@@ -10,18 +10,12 @@ import org.springframework.web.client.RestTemplate;
 
 import lombok.extern.slf4j.Slf4j;
 
-import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 
 //import java.nio.file.*;
 
 @SpringBootApplication
 @Slf4j
 public class ClothCraftApplication {
-	private final UserService userService;
-
-    public ClothCraftApplication(UserService userService){
-		this.userService = userService;
-    }
 	
 	public static void main(String[] args) {
 		SpringApplication.run(ClothCraftApplication.class, args);
