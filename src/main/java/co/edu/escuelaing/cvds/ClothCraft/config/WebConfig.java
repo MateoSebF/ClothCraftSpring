@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@SuppressWarnings("null")
+@SuppressWarnings("null") 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
