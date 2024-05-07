@@ -17,8 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -106,10 +107,20 @@ public class UserController {
     public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
         try {
             log.info("Initial userDTO received: " + userDTO.toString());
-            log.info("The image was read");
-            String imagePath = "./images/profile.png";
-            byte[] imageBytes = Files.readAllBytes(Paths.get(imagePath));
+            
+            String imageUrl="https://cdn-icons-png.flaticon.com/512/1361/1361728.png";
+            URI uri = new URI(imageUrl);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            try (InputStream inputStream = uri.toURL().openStream()) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+            byte[] imageBytes = outputStream.toByteArray();
             userDTO.setPhotoProfile(imageBytes);
+            log.info("The image was read"); 
             User user = convertToObject(userDTO);
             log.info("The user was converted: " + user.toString());
     
