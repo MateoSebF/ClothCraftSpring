@@ -16,9 +16,10 @@ public class DayService {
     @Autowired
     private DayRepository dayRepository;
 
-    public List<Outfit> findOutfitsByUserAndDate(String userId, Date date) {
-        return dayRepository.findOutfitsByUserAndDate(userId, date);
+    public String findOutfitIdByUserAndDate(String userId, Date date) {
+        return dayRepository.findOutfitIdByUserAndDate(userId, date);
     }
+
     public Day getDayById(String id) {
         Optional<Day> dayOptional = dayRepository.findById(id);
         return dayOptional.orElse(null);
