@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface DayRepository extends JpaRepository<Day, String> {
 
-    @Query("SELECT d.outfit FROM Day d WHERE d.calendary.user.id = :userId AND d.date = :date")
-    List<Outfit> findOutfitsByUserAndDate(String userId, Date date);
+    @Query("SELECT d.outfit.id FROM Day d WHERE d.calendary.user.id = :userId AND d.date = :date")
+    String findOutfitIdByUserAndDate(String userId, Date date);
 }

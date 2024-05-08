@@ -43,14 +43,15 @@ public class DayController {
     }
     @GetMapping("/{userId}/{date}")
     public ResponseEntity<String> getOutfitIdByUserAndDate(@PathVariable String userId, @PathVariable Date date) {
-        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        List<Outfit> outfits = dayService.findOutfitsByUserAndDate(userId, date);
-        if (!outfits.isEmpty()) {
-            String outfitId = outfits.get(0).getId();
-            response = new ResponseEntity<>(outfitId, HttpStatus.OK);
+        String outfitId = dayService.findOutfitIdByUserAndDate(userId, date);
+
+        if (outfitId != null) {
+            return new ResponseEntity<>(outfitId, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return response;
     }
+
 
     @GetMapping("/all")
     public ResponseEntity<List<DayDTO>> getAllDays() {
