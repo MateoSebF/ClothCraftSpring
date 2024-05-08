@@ -12,6 +12,7 @@ import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class ClothingDTO {

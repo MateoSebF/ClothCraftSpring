@@ -75,10 +75,11 @@ public class UserController {
         return response;
     }
 
-    @GetMapping("/clothings/{id}")
-    public ResponseEntity<List<ClothingDTO>> getClothingsByUniqueKey(@PathVariable String id) {
+    @GetMapping("/clothings")
+    public ResponseEntity<List<ClothingDTO>> getClothingsByUniqueKey(
+            @RequestParam(name = "userId", required = true) String userId) {
         ResponseEntity<List<ClothingDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        User user = userService.getUserById(id);
+        User user = userService.getUserById(userId);
         if (user != null) {
             Set<Clothing> clothingList = user.getAllClothing();
             List<ClothingDTO> clothingDTOList = clothingList.stream()
