@@ -1,6 +1,7 @@
 package co.edu.escuelaing.cvds.ClothCraft.controller;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.Calendary;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.OutfitDTO;
 import co.edu.escuelaing.cvds.ClothCraft.model.Day;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
@@ -42,15 +43,24 @@ public class DayController {
         }
     }
     @GetMapping("/{userId}/{date}")
-    public ResponseEntity<String> getOutfitIdByUserAndDate(@PathVariable String userId, @PathVariable Date date) {
-        String outfitId = dayService.findOutfitIdByUserAndDate(userId, date);
+    public ResponseEntity<OutfitDTO> getOutfitByUserAndDate(@PathVariable String userId, @PathVariable Date date) {
+        ResponseEntity<OutfitDTO> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        User user = userService.getUserById(userId);
 
-        if (outfitId != null) {
-            return new ResponseEntity<>(outfitId, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (user != null) {
+            Day day = user.getCalendary().getDays().stream()
+                    .filter(d -> d.getDate().equals(date))
+                    .findFirst()
+                    .orElse(null);
+
+            if (day != null && day.getOutfit() != null) {
+                OutfitDTO outfitDTO = day.getOutfit().toDTO();
+                response = new ResponseEntity<>(outfitDTO, HttpStatus.OK);
+            }
         }
+        return response;
     }
+
 
 
     @GetMapping("/all")
