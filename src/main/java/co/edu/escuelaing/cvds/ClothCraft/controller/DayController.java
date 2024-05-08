@@ -53,10 +53,7 @@ public class DayController {
             if (day != null && day.getOutfit() != null) {
                 OutfitDTO outfitDTO = day.getOutfit().toDTO();
                 List<String> clothingIds = outfitDTO.getClothesIds();
-
-                // Obtener las prendas correspondientes a los IDs
                 List<Clothing> clothingList = getClothingByClothingIds(clothingIds);
-                // Convertir las prendas a DTO de prendas
                 List<ClothingDTO> clothingDTOList = clothingList.stream()
                         .map(Clothing::toDTO)
                         .collect(Collectors.toList());
@@ -77,11 +74,6 @@ public class DayController {
         }
         return clothingList;
     }
-
-
-
-
-
 
     @GetMapping("/all")
     public ResponseEntity<List<DayDTO>> getAllDays() {
