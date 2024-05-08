@@ -4,8 +4,6 @@ import co.edu.escuelaing.cvds.ClothCraft.model.Session;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.repository.SessionRepository;
 import co.edu.escuelaing.cvds.ClothCraft.repository.UserRepository;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
@@ -14,6 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
+import java.util.Collections;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +27,6 @@ import java.util.UUID;
 @Controller
 @RequestMapping(value = "/login")
 public class LoginController {
-
 
     private final UserRepository userRepository;
 
@@ -59,51 +59,34 @@ public class LoginController {
             Session session = new Session(UUID.randomUUID(), Instant.now(), user);
             sessionRepository.save(session);
 
-            // Create and add a cookie to the response
-            Cookie cookie = new Cookie("authToken", session.getToken().toString());
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
+            System.out.println(session.getToken().toString());
 
-            // Return only the cookies
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body(Collections.singletonMap("token", session.getToken().toString()));
+        }
+    }
+
+    @Transactional
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutSubmit(@RequestBody Map<String, String> body, HttpServletResponse response) {
+        String authTokenHeader = body.get("Cookie");
+        System.out.println("Auth token from body: " + authTokenHeader);
+
+        if (authTokenHeader != null) {
+            UUID token = UUID.fromString(authTokenHeader);
+            Session session = sessionRepository.findByToken(token);
+
+            if (session != null) {
+                sessionRepository.delete(session);
+            }
+
+            System.out.println("Cookie and session deleted");
+            return ResponseEntity.ok("Logged out successfully");
+        } else {
+            return ResponseEntity.badRequest().body("No authToken found in the body");
         }
     }
 
 
-        @Transactional
-        @PostMapping("/logout")
-        public ResponseEntity<?> logoutSubmit(HttpServletRequest request, HttpServletResponse response) {
-            // Get the cookie
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if (cookie.getName().equals("authToken")) {
-                        // Get the session token from the cookie
-                        UUID token = UUID.fromString(cookie.getValue());
-
-                        // Find the session by token
-                        Session session = sessionRepository.findByToken(token);
-
-                        // If the session exists, delete it
-                        if (session != null) {
-                            sessionRepository.delete(session);
-                        }
-
-                        // Delete the cookie
-                        cookie.setValue(null);
-                        cookie.setMaxAge(0);
-                        cookie.setSecure(true);
-                        cookie.setHttpOnly(true);
-                        cookie.setPath("/");
-                        response.addCookie(cookie);
-                        System.out.println("Cookie and session deleted");
-                        break;
-                    }
-                }
-            }
-
-    return ResponseEntity.ok().build();
-}
 
     @GetMapping("register")
     public String register() {
