@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,15 @@ public class DayController {
         Day day = dayService.getDayById(id);
         if (day != null) {
             return new ResponseEntity<>(day.toDTO(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/{userId}/{date}")
+    public ResponseEntity<List<Outfit>> getOutfitsByUserAndDate(@PathVariable String userId, @PathVariable Date date) {
+        List<Outfit> outfits = dayService.findOutfitsByUserAndDate(userId, date);
+        if (!outfits.isEmpty()) {
+            return new ResponseEntity<>(outfits, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
