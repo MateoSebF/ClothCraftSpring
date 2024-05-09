@@ -65,6 +65,7 @@ public class DayController {
         return response;
     }
 
+
     private List<Clothing> getClothingByClothingIds(List<String> clothingIds) {
         List<Clothing> clothingList = new ArrayList<>();
         for (String clothingId : clothingIds) {
@@ -76,14 +77,16 @@ public class DayController {
         return clothingList;
     }
 
+
     @GetMapping("/all")
     public ResponseEntity<List<DayDTO>> getAllDays() {
-        List<Day> dayList = dayService.getAllDays();
-        List<DayDTO> dayDTOList = dayList.stream()
+        List<Day> days = dayService.getAllDays();
+        List<DayDTO> dayDTOs = days.stream()
                 .map(Day::toDTO)
                 .collect(Collectors.toList());
-        return new ResponseEntity<>(dayDTOList, HttpStatus.OK);
+        return new ResponseEntity<>(dayDTOs, HttpStatus.OK);
     }
+
 
     @PostMapping
     public ResponseEntity<DayDTO> createDay(@RequestBody DayDTO dayDTO) {
