@@ -1,6 +1,5 @@
 package co.edu.escuelaing.cvds.ClothCraft.config;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import co.edu.escuelaing.cvds.ClothCraft.repository.SessionRepository;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.UUID;
 
 @SuppressWarnings("null")
@@ -28,15 +26,18 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
     }
 
     private String getCookieValue(HttpServletRequest req, String cookieName) {
-        String cookieValue = null;
-        if (req.getCookies() != null) {
-            cookieValue = Arrays.stream(req.getCookies())
-                    .filter(cookie -> cookieName.equals(cookie.getName()))
-                    .map(Cookie::getValue)
-                    .findFirst()
-                    .orElse(null);
-        }
-        return cookieValue;
+
+
+
+
+        String cookieValue = req.getHeader(cookieName);
+        System.out.println("CookieValue: " + cookieValue);
+
+        String sinAuthToken = cookieValue.replace("authToken=", "");
+
+        System.out.println("CookieValue: " + sinAuthToken);
+
+        return sinAuthToken;
     }
 
     @SuppressWarnings("unused")
@@ -52,7 +53,7 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
         if (isStatic) {
             return true;
         }
-        String authToken = getCookieValue(request, "authToken");
+        String authToken = getCookieValue(request, "cookie");
         log.info("AuthToken: " + authToken);
         if (authToken != null) {
             Session session = sessionRepository.findByToken(UUID.fromString(authToken));
@@ -90,6 +91,7 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
             return false;
         }
     }
+
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
