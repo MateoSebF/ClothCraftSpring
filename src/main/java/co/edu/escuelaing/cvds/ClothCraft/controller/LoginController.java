@@ -2,6 +2,7 @@ package co.edu.escuelaing.cvds.ClothCraft.controller;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.Session;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 import co.edu.escuelaing.cvds.ClothCraft.repository.SessionRepository;
 import co.edu.escuelaing.cvds.ClothCraft.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
@@ -45,13 +47,13 @@ public class LoginController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> loginSubmit(@RequestParam Map<String, String> parameters,
+    public ResponseEntity<?> loginSubmit(@RequestBody UserDTO userDTO,
                                          HttpServletResponse response) {
-        User user = userRepository.findByEmail(parameters.get("email")).orElse(null);
+        User user = userRepository.findByEmail(userDTO.getEmail()).orElse(null);
         if (user == null) {
             // Handle user not found
             return ResponseEntity.badRequest().body("Usuario no encontrado");
-        } else if (!user.getPassword().equals(hashPassword(parameters.get("password")))) {
+        } else if (!user.getPassword().equals(hashPassword(userDTO.getPassword()))) {
             // Handle incorrect password
             return ResponseEntity.badRequest().body("Contraseña incorrecta");
         } else {

@@ -27,9 +27,6 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
 
     private String getCookieValue(HttpServletRequest req, String cookieName) {
 
-
-
-
         String cookieValue = req.getHeader(cookieName);
         System.out.println("CookieValue: " + cookieValue);
 
