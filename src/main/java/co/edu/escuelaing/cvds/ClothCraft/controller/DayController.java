@@ -39,18 +39,9 @@ public class DayController {
     @Autowired
     private ClothingService clothingService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DayDTO> getDayById(@PathVariable String id) {
-        Day day = dayService.getDayById(id);
-        if (day != null) {
-            return new ResponseEntity<>(day.toDTO(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-    
-    @GetMapping("/{userId}/{date}")
-    public ResponseEntity<List<ClothingDTO>> getClothingByOutfitAndDate(@PathVariable String userId, @PathVariable Date date) {
+    @GetMapping("/{date}")
+    public ResponseEntity<List<ClothingDTO>> getClothingByOutfitAndDate(
+            @RequestParam(name = "userId", required = true) String userId, @PathVariable Date date) {
         ResponseEntity<List<ClothingDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         User user = userService.getUserById(userId);
 
@@ -84,7 +75,7 @@ public class DayController {
         }
         return clothingList;
     }
-    
+
     @GetMapping("/all")
     public ResponseEntity<List<DayDTO>> getAllDays() {
         List<Day> dayList = dayService.getAllDays();
@@ -93,7 +84,7 @@ public class DayController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(dayDTOList, HttpStatus.OK);
     }
-    
+
     @PostMapping
     public ResponseEntity<DayDTO> createDay(@RequestBody DayDTO dayDTO) {
         Day day = dayService.createDay(convertToObject(dayDTO));
@@ -104,9 +95,10 @@ public class DayController {
         }
     }
 
-    @PostMapping("/user/{userId}")
-    public ResponseEntity<DayDTO> createOutfitForUserAndDay(@PathVariable String userId,
-                                                        @RequestBody DayDTO dayDTO) {
+    @PostMapping("/user")
+    public ResponseEntity<DayDTO> createOutfitForUserAndDay(
+            @RequestParam(name = "userId", required = true) String userId,
+            @RequestBody DayDTO dayDTO) {
         User user = userService.getUserById(userId);
         if (user != null) {
             Day day = convertToObject(dayDTO);
@@ -139,9 +131,11 @@ public class DayController {
     }
 
     private Day convertToObject(DayDTO dayDTO) {
-        Calendary calendary = dayDTO.getCalendaryId() != null ? calendaryService.getCalendaryById(dayDTO.getCalendaryId()) : null;
+        Calendary calendary = dayDTO.getCalendaryId() != null
+                ? calendaryService.getCalendaryById(dayDTO.getCalendaryId())
+                : null;
         Outfit outfit = dayDTO.getOutfitId() != null ? outfitService.getOutfitById(dayDTO.getOutfitId()) : null;
-        Day day = dayDTO.toEntity(calendary,outfit);
+        Day day = dayDTO.toEntity(calendary, outfit);
         return day;
     }
 
