@@ -47,17 +47,20 @@ public class WardrobeController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(wardrobeDTOList, HttpStatus.OK);
     }
-    
-    @GetMapping("/{id}/layers")
-    public ResponseEntity<List<String>> getLayers(@PathVariable String id) {
-        Wardrobe wardrobe = wardrobeService.getWardrobeById(id);
+
+    @GetMapping("/layersTypes")
+    public ResponseEntity<List<String>> getLayers(
+            @RequestParam(name = "userId", required = true) String userId) {
+        User user = userService.getUserById(userId);
+        Wardrobe wardrobe = user.getWardrobe();
         if (wardrobe != null) {
-            return new ResponseEntity<>(wardrobe.getLayers().stream().map(ClothingType::name).collect(Collectors.toList()), HttpStatus.OK);
+            return new ResponseEntity<>(
+                    wardrobe.getLayers().stream().map(ClothingType::name).collect(Collectors.toList()), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    
+
     @PostMapping
     public ResponseEntity<WardrobeDTO> createWardrobe(@RequestBody WardrobeDTO wardrobeDTO) {
         Wardrobe wardrobe = wardrobeService.createWardrobe(convertToObject(wardrobeDTO));
@@ -96,7 +99,8 @@ public class WardrobeController {
     private Wardrobe convertToObject(WardrobeDTO wardrobeDTO) {
         User user = wardrobeDTO.getUserId() != null ? userService.getUserById(wardrobeDTO.getUserId()) : null;
         Set<Clothing> clothings = new HashSet<>();
-        for (String clothingId: wardrobeDTO.getClothesIds()) clothings.add(clothingService.getClothingById(clothingId));
-        return wardrobeDTO.toEntity(wardrobeDTO.getId(),user,clothings);
+        for (String clothingId : wardrobeDTO.getClothesIds())
+            clothings.add(clothingService.getClothingById(clothingId));
+        return wardrobeDTO.toEntity(wardrobeDTO.getId(), user, clothings);
     }
 }

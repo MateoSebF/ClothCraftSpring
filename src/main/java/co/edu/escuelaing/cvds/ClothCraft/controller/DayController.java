@@ -1,11 +1,15 @@
 package co.edu.escuelaing.cvds.ClothCraft.controller;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.Calendary;
+import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.Day;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.ClothingDTO;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.DayDTO;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.OutfitDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
+import co.edu.escuelaing.cvds.ClothCraft.service.ClothingService;
 import co.edu.escuelaing.cvds.ClothCraft.service.DayService;
 import co.edu.escuelaing.cvds.ClothCraft.service.OutfitService;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
@@ -15,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +36,8 @@ public class DayController {
     private OutfitService outfitService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ClothingService clothingService;
 
     @GetMapping("/{id}")
     public ResponseEntity<DayDTO> getDayById(@PathVariable String id) {
@@ -40,7 +48,43 @@ public class DayController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    
+    @GetMapping("/{userId}/{date}")
+    public ResponseEntity<List<ClothingDTO>> getClothingByOutfitAndDate(@PathVariable String userId, @PathVariable Date date) {
+        ResponseEntity<List<ClothingDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        User user = userService.getUserById(userId);
 
+        if (user != null) {
+            Day day = user.getCalendary().getDays().stream()
+                    .filter(d -> d.getDate().equals(date))
+                    .findFirst()
+                    .orElse(null);
+
+            if (day != null && day.getOutfit() != null) {
+                OutfitDTO outfitDTO = day.getOutfit().toDTO();
+                List<String> clothingIds = outfitDTO.getClothesIds();
+                List<Clothing> clothingList = getClothingByClothingIds(clothingIds);
+                List<ClothingDTO> clothingDTOList = clothingList.stream()
+                        .map(Clothing::toDTO)
+                        .collect(Collectors.toList());
+
+                response = new ResponseEntity<>(clothingDTOList, HttpStatus.OK);
+            }
+        }
+        return response;
+    }
+
+    private List<Clothing> getClothingByClothingIds(List<String> clothingIds) {
+        List<Clothing> clothingList = new ArrayList<>();
+        for (String clothingId : clothingIds) {
+            Clothing clothing = clothingService.getClothingById(clothingId);
+            if (clothing != null) {
+                clothingList.add(clothing);
+            }
+        }
+        return clothingList;
+    }
+    
     @GetMapping("/all")
     public ResponseEntity<List<DayDTO>> getAllDays() {
         List<Day> dayList = dayService.getAllDays();

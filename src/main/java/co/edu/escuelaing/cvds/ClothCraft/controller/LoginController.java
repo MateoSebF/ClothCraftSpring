@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
 import java.util.Collections;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 import java.math.BigInteger;
@@ -67,8 +66,8 @@ public class LoginController {
 
     @Transactional
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutSubmit(@RequestBody Map<String, String> body, HttpServletResponse response) {
-        String authTokenHeader = body.get("Cookie");
+    public ResponseEntity<?> logoutSubmit(@RequestParam Map<String, String> parameters, HttpServletResponse response) {
+        String authTokenHeader = parameters.get("Cookie");
         System.out.println("Auth token from body: " + authTokenHeader);
 
         if (authTokenHeader != null) {
