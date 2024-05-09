@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/outfit")
 public class OutfitController {
@@ -38,10 +40,13 @@ public class OutfitController {
 
     @GetMapping("/categories")
     public ResponseEntity<List<String>> getCategories() {
+        log.info("The user is getting the categories of the outfits.");
         List<String> categories = new ArrayList<>();
+        
         for (Category category : Category.values()) {
             categories.add(category.toString());
         }
+        log.info(categories.toString());
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 

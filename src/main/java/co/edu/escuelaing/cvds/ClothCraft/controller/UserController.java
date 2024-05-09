@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,6 +43,28 @@ public class UserController {
         User user = userService.getUserById(id);
         if (user != null) {
             return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<Map<String,Object>> getProfileOfAUser(
+            @RequestParam(name = "userId", required = true) String userId) {
+        User user = userService.getUserById(userId);
+        log.info("User: " + user);
+        if (user != null) {
+            String name = user.getName();
+            String userName = user.getUsername();
+            byte[] profilePhoto = user.getPhotoProfile();
+            int numItems = user.getNumClothing();
+
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("name", name);
+            userData.put("username", userName);
+            userData.put("profileImage", profilePhoto);
+            userData.put("numItems", numItems);
+            return new ResponseEntity<>(userData, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -75,10 +99,11 @@ public class UserController {
         return response;
     }
 
-    @GetMapping("/clothings/{id}")
-    public ResponseEntity<List<ClothingDTO>> getClothingsByUniqueKey(@PathVariable String id) {
+    @GetMapping("/clothings")
+    public ResponseEntity<List<ClothingDTO>> getClothingsByUniqueKey(
+            @RequestParam(name = "userId", required = true) String userId) {
         ResponseEntity<List<ClothingDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        User user = userService.getUserById(id);
+        User user = userService.getUserById(userId);
         if (user != null) {
             Set<Clothing> clothingList = user.getAllClothing();
             List<ClothingDTO> clothingDTOList = clothingList.stream()
@@ -107,8 +132,8 @@ public class UserController {
     public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
         try {
             log.info("Initial userDTO received: " + userDTO.toString());
-            
-            String imageUrl="https://cdn-icons-png.flaticon.com/512/1361/1361728.png";
+
+            String imageUrl = "https://cdn-icons-png.flaticon.com/512/1361/1361728.png";
             URI uri = new URI(imageUrl);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             try (InputStream inputStream = uri.toURL().openStream()) {
@@ -120,36 +145,37 @@ public class UserController {
             }
             byte[] imageBytes = outputStream.toByteArray();
             userDTO.setPhotoProfile(imageBytes);
-            log.info("The image was read"); 
+            log.info("The image was read");
             User user = convertToObject(userDTO);
             log.info("The user was converted: " + user.toString());
-    
+
             // Create a wardrobe and a calendary for the user
             Wardrobe wardrobe = new Wardrobe(user);
             Calendary calendary = new Calendary(user);
             log.info("The wardrobe and the calendary were created: " + wardrobe.toString() + calendary.toString());
-    
+
             // Save the user with an initial null wardrobe and calendary
             user = userService.createUser(user);
             log.info("The user was saved: " + user.toString());
-    
+
             // Save the wardrobe and the calendary
             wardrobeService.createWardrobe(wardrobe);
             calendaryService.createCalendary(calendary);
             log.info("The wardrobe and the calendary were saved: " + wardrobe.toString() + calendary.toString());
-    
+
             // Update the user with the wardrobe and the calendary
             user.setWardrobe(wardrobe);
             user.setCalendary(calendary);
             log.info("The user was updated: " + user.toString());
-    
+
             // Save the user with the wardrobe and the calendary
             user = userService.updateUser(user.getId(), user);
             log.info("The user was updated: " + user.toString());
-    
+
             return new ResponseEntity<>(user.toString(), HttpStatus.CREATED);
         } catch (Exception e) {
-            // Captura cualquier excepción y devuelve un ResponseEntity con un mensaje de error
+            // Captura cualquier excepción y devuelve un ResponseEntity con un mensaje de
+            // error
             String errorMessage = "An error occurred while processing the request: " + e.getMessage();
             log.error(errorMessage);
             return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);

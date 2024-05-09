@@ -66,9 +66,10 @@ public class ClothingController {
         return new ResponseEntity<>(clothingDTOList, HttpStatus.OK);
     }
 
-    @GetMapping("/byType/{userId}/{type}")
-    public ResponseEntity<List<ClothingDTO>> getClothingByType(@PathVariable String userId,
-    @PathVariable String type) {
+    @GetMapping("/byType/{type}")
+    public ResponseEntity<List<ClothingDTO>> getClothingByType(@PathVariable String type,
+
+            @RequestParam(name = "userId", required = true) String userId) {
         ResponseEntity<List<ClothingDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         User user = userService.getUserById(userId);
         if (user != null) {
@@ -81,9 +82,10 @@ public class ClothingController {
         return response;
     }
 
-    @PostMapping("{userId}")
+    @PostMapping("")
     public ResponseEntity<ClothingDTO> createClothingForUser(@RequestBody ClothingDTO clothingDTO,
-            @PathVariable String userId) {
+            @RequestParam(name = "userId", required = true ) String userId) {
+
         User user = userService.getUserById(userId);
         ResponseEntity<ClothingDTO> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (user != null) {
