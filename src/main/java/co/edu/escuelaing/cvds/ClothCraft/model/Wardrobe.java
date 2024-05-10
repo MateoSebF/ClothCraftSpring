@@ -102,4 +102,8 @@ public class Wardrobe {
         return clothingList;
     }
 
+    public int getNumClothing() {
+        return clothes.size();
+    }
+
 }

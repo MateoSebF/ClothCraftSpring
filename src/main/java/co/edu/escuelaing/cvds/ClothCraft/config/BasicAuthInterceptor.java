@@ -26,13 +26,12 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
     }
 
     private String getCookieValue(HttpServletRequest req, String cookieName) {
-
         String cookieValue = req.getHeader(cookieName);
-        System.out.println("CookieValue: " + cookieValue);
-
-        String sinAuthToken = cookieValue.replace("authToken=", "");
-
-        System.out.println("CookieValue: " + sinAuthToken);
+        String sinAuthToken = null;
+        if(cookieValue != null) {
+            sinAuthToken = cookieValue.replace("authToken=", "");
+        }
+        else log.error("CookieValue is null");
 
         return sinAuthToken;
     }
@@ -42,6 +41,7 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         log.info("BasicAuthInterceptor::preHandle()");
+        log.info(request.getMethod());
         String path = request.getRequestURI();
         log.info("Path:" + path);
         String isStaticParam = request.getParameter("isStatic");

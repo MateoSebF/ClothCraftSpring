@@ -92,4 +92,8 @@ public class User {
         return wardrobe.getAllClothingByType(type);
     }
 
+    public int getNumClothing() {
+        return wardrobe.getNumClothing();
+    }
+
 }
