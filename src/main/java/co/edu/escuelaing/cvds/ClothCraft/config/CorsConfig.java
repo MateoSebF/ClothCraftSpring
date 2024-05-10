@@ -5,6 +5,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@EnableWebMvc
 public class CorsConfig implements WebMvcConfigurer {
 
     
@@ -12,8 +13,8 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000/","https://mango-cliff-06b900910.5.azurestaticapps.net/")
-                .allowedMethods("*")
+                .allowedOrigins("http://localhost:3000","https://mango-cliff-06b900910.5.azurestaticapps.net")
+                .allowedMethods("GET", "POST", "OPTIONS","PUT","DELETE")
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
