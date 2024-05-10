@@ -41,12 +41,13 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         log.info("BasicAuthInterceptor::preHandle()");
-        if ("OPTIONS".equals(request.getMethod())) {
-            log.info("Received OPTIONS request from origin: {}", request.getHeader("Origin"));
-            return true;
-        }
+        log.info(request.getMethod());
         String path = request.getRequestURI();
         log.info("Path:" + path);
+        if ("OPTIONS".equals(request.getMethod())) {
+            
+            return true;
+        }
         String isStaticParam = request.getParameter("isStatic");
         boolean isStatic = Boolean.parseBoolean(isStaticParam);
         log.info("IsStatic: " + isStatic);

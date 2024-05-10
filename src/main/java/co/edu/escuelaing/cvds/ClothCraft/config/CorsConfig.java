@@ -15,7 +15,8 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:3000", "https://mango-cliff-06b900910.5.azurestaticapps.net")
                 .allowedMethods("GET", "POST", "OPTIONS", "PUT", "DELETE")
                 .allowedHeaders("Origin", "Accept", "Content-Type", "Authorization", "X-Requested-With", "X-CSRF-Token")
-                .allowCredentials(true);
+                .allowCredentials(true)
+                .exposedHeaders("Access-Control-Allow-Origin"); // Exponer el encabezado Access-Control-Allow-Origin
     }
 
 }
