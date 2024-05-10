@@ -12,7 +12,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000","https://mango-cliff-06b900910.5.azurestaticapps.net")
+                .allowedOrigins("http://localhost:3000/**","https://mango-cliff-06b900910.5.azurestaticapps.net/**")
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true);
