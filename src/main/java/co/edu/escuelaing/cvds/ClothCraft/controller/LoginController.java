@@ -5,6 +5,7 @@ import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 import co.edu.escuelaing.cvds.ClothCraft.repository.SessionRepository;
 import co.edu.escuelaing.cvds.ClothCraft.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
@@ -69,8 +70,9 @@ public class LoginController {
 
     @Transactional
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutSubmit(@RequestParam(name = "authToken", required = true) String authToken, HttpServletResponse response) {
-        String authTokenHeader = authToken;
+    public ResponseEntity<?> logoutSubmit(HttpServletRequest request, HttpServletResponse response) {
+        String cookie = request.getHeader("cookie");
+        String authTokenHeader = cookie.replace("authToken=", "");
         System.out.println("Auth token from body: " + authTokenHeader);
 
         if (authTokenHeader != null) {
