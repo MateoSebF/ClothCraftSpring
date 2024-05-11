@@ -47,10 +47,10 @@ public class ClothingController {
     }
 
     @GetMapping("/image/{id}")
-    public ResponseEntity<byte[]> getImagen(@PathVariable String id) {
+    public ResponseEntity<String> getImagen(@PathVariable String id) {
         Clothing clothing = clothingService.getClothingById(id);
         if (clothing != null) {
-            byte[] image = clothing.getImage();
+            String image = clothing.getImage();
             return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

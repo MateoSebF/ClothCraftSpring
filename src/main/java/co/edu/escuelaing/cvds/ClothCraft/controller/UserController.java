@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +58,7 @@ public class UserController {
         if (user != null) {
             String name = user.getName();
             String userName = user.getUsername();
-            byte[] profilePhoto = user.getPhotoProfile();
+            String profilePhoto = user.getPhotoProfile();
             int numItems = user.getNumClothing();
 
             Map<String, Object> userData = new HashMap<>();
@@ -85,9 +86,9 @@ public class UserController {
     }
 
     @GetMapping("/photoProfile/{uniqueKey}")
-    public ResponseEntity<byte[]> getPhotoProfileByUniqueKey(@PathVariable String uniqueKey) {
-        ResponseEntity<byte[]> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        byte[] photoProfile;
+    public ResponseEntity<String> getPhotoProfileByUniqueKey(@PathVariable String uniqueKey) {
+        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        String photoProfile;
         User user = null;
         if (user == null)
             user = userService.getUserByEmail(uniqueKey);
@@ -138,8 +139,6 @@ public class UserController {
     @PostMapping
     public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
         try {
-            log.info("Initial userDTO received: " + userDTO.toString());
-
             String imageUrl = "https://cdn-icons-png.flaticon.com/512/1361/1361728.png";
             URI uri = new URI(imageUrl);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -151,7 +150,8 @@ public class UserController {
                 }
             }
             byte[] imageBytes = outputStream.toByteArray();
-            userDTO.setPhotoProfile(imageBytes);
+            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+            userDTO.setPhotoProfile(base64Image);
             log.info("The image was read");
             User user = convertToObject(userDTO);
             log.info("The user was converted: " + user.toString());

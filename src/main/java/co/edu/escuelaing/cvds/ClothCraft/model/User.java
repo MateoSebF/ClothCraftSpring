@@ -45,8 +45,8 @@ public class User {
     private String username;
 
     @Lob
-    @Column(name = "photo", nullable = false, columnDefinition = "BLOB")
-    private byte[] photoProfile;
+    @Column(name = "photo", nullable = false, length = 1048576)
+    private String photoProfile;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Wardrobe wardrobe;
@@ -55,7 +55,7 @@ public class User {
     private Calendary calendary;
 
     public User(String name, String email, String password, 
-                String username, byte[] photoProfile,
+                String username, String photoProfile,
                 Wardrobe wardrobe, Calendary calendary) {
 
         this.name = name;

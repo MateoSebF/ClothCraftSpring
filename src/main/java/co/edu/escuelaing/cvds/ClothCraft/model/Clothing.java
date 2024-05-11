@@ -36,8 +36,8 @@ public class Clothing {
     private String name;
     
     @Lob
-    @Column(name = "image", nullable = false, columnDefinition = "BLOB")
-    private byte[] image;
+    @Column(name = "image", nullable = false, length = 1048576)
+    private String image;
 
     @Column(name = "color", nullable = false)
     private String color;

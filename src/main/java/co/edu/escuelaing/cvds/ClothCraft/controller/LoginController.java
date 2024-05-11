@@ -27,6 +27,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
+
 @Slf4j
 @Controller
 @RequestMapping(value = "/login")
@@ -74,14 +75,16 @@ public class LoginController {
     @Transactional
     @PostMapping("/logout")
     public ResponseEntity<?> logoutSubmit(HttpServletRequest request, HttpServletResponse response) {
-        String cookie = request.getHeader("Set-Cookie");
-        String authTokenHeader = cookie.replace("authToken=", "");
         String res = "Headers";
         for (java.util.Enumeration<String> headerNames = request.getHeaderNames(); headerNames.hasMoreElements();){
             String header = headerNames.nextElement();       
             res += " new header:" + request.getHeader(header) + "\n";               
         }  
         log.info(res);
+
+        String cookie = request.getHeader("cookie");
+        String authTokenHeader = cookie.replace("authToken=", "");
+        
         log.info("Auth token from body: " + authTokenHeader);
         if (authTokenHeader != null) {
             UUID token = UUID.fromString(authTokenHeader);
@@ -91,7 +94,7 @@ public class LoginController {
                 sessionRepository.delete(session);
             }
 
-            response.addHeader("Set-Cookie", "authToken=; Domain:mango-cliff-06b900910.5.azurestaticapps.net; Path=/; Secure; SameSite=None");
+            response.addHeader("Set-Cookie", "authToken=; Path=/; Secure; SameSite=None");
             log.info("The opp is succesful");
             return ResponseEntity.ok("Logged out successfully");
         } else {
