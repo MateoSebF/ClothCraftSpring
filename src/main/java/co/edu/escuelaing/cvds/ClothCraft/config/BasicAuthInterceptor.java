@@ -47,6 +47,7 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
         String isStaticParam = request.getParameter("isStatic");
         boolean isStatic = Boolean.parseBoolean(isStaticParam);
         log.info("IsStatic: " + isStatic);
+        
         if (isStatic) {
             return true;
         }
@@ -54,6 +55,10 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
         log.info("AuthToken: " + authToken);
         if (authToken != null) {
             Session session = sessionRepository.findByToken(UUID.fromString(authToken));
+            if (path.equals("login/logout")) {
+                sessionRepository.delete(session);
+                return true;
+            }
             if (session != null) {
                 log.info("Session: " + session.getToken() + " " + session.getUser().getEmail());
                 String userId = session.getUser().getId();
@@ -64,10 +69,6 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
                     response.sendError(HttpServletResponse.SC_EXPECTATION_FAILED, "SessionTimeout");
                     return false;
                 } else {
-                    if (path.contains("login/logout")) {
-                        sessionRepository.delete(session);
-                        return true;
-                    }
                     String requestURI = request.getRequestURI();
                     String queryString = request.getQueryString() != null ? request.getQueryString() : "";
                     String userIdParam = "userId=" + userId;
