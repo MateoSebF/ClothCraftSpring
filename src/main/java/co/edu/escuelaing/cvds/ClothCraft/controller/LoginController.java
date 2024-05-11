@@ -71,6 +71,8 @@ public class LoginController {
     @Transactional
     @PostMapping("/logout")
     public ResponseEntity<?> logoutSubmit(HttpServletResponse response) {
+        response.addHeader("Set-Cookie", "authToken=; Path=/; Secure; SameSite=None");
+        response.getHeader("Set-Cookie");
         return ResponseEntity.ok("Logged out successfully");
     }
 
