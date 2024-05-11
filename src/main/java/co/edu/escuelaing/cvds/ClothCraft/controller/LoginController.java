@@ -75,14 +75,6 @@ public class LoginController {
         System.out.println("Auth token from body: " + authTokenHeader);
 
         if (authTokenHeader != null) {
-            UUID token = UUID.fromString(authTokenHeader);
-            Session session = sessionRepository.findByToken(token);
-
-            if (session != null) {
-                sessionRepository.delete(session);
-            }
-
-            System.out.println("Cookie and session deleted");
             return ResponseEntity.ok("Logged out successfully");
         } else {
             return ResponseEntity.badRequest().body("No authToken found in the body");
