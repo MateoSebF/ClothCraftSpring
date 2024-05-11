@@ -70,15 +70,8 @@ public class LoginController {
 
     @Transactional
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutSubmit(@RequestParam(name = "token", required = true) String authToken, HttpServletResponse response) {
-        String authTokenHeader = authToken;
-        System.out.println("Auth token from body: " + authTokenHeader);
-
-        if (authTokenHeader != null) {
-            return ResponseEntity.ok("Logged out successfully");
-        } else {
-            return ResponseEntity.badRequest().body("No authToken found in the body");
-        }
+    public ResponseEntity<?> logoutSubmit(HttpServletResponse response) {
+        return ResponseEntity.ok("Logged out successfully");
     }
 
     @GetMapping("register")
