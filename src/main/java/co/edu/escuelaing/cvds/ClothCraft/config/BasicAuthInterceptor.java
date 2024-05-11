@@ -55,10 +55,6 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
         log.info("AuthToken: " + authToken);
         if (authToken != null) {
             Session session = sessionRepository.findByToken(UUID.fromString(authToken));
-            if (path.equals("login/logout")) {
-                sessionRepository.delete(session);
-                return true;
-            }
             if (session != null) {
                 log.info("Session: " + session.getToken() + " " + session.getUser().getEmail());
                 String userId = session.getUser().getId();
