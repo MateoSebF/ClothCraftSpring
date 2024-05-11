@@ -62,7 +62,6 @@ public class LoginController {
 
             response.addHeader("Set-Cookie", "authToken=" + session.getToken().toString()
                     + "; Domain:mango-cliff-06b900910.5.azurestaticapps.net; Path=/; Secure; SameSite=None");
-            response.getHeader("Set-Cookie");
             System.out.println("Cookie set" + response.getHeader("Set-Cookie"));
             return ResponseEntity.ok().body(Collections.singletonMap("token", session.getToken().toString()));
         }
@@ -70,10 +69,26 @@ public class LoginController {
 
     @Transactional
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutSubmit(HttpServletResponse response) {
-        response.addHeader("Set-Cookie", "authToken=; Path=/; Secure; SameSite=None");
-        response.getHeader("Set-Cookie");
-        return ResponseEntity.ok("Logged out successfully");
+    public ResponseEntity<?> logoutSubmit(@RequestParam(name = "authToken", required = true) String authToken, HttpServletResponse response) {
+        String authTokenHeader = authToken;
+        System.out.println("Auth token from body: " + authTokenHeader);
+
+        if (authTokenHeader != null) {
+            UUID token = UUID.fromString(authTokenHeader);
+            Session session = sessionRepository.findByToken(token);
+
+            if (session != null) {
+                sessionRepository.delete(session);
+            }
+
+            response.addHeader("Set-Cookie", "authToken=" + session.getToken().toString()
+                    + "; Domain:mango-cliff-06b900910.5.azurestaticapps.net; Path=/; Secure; SameSite=None");
+            System.out.println("Cookie set" + response.getHeader("Set-Cookie"));
+            System.out.println("Cookie and session deleted");
+            return ResponseEntity.ok("Logged out successfully");
+        } else {
+            return ResponseEntity.badRequest().body("No authToken found in the body");
+        }
     }
 
     @GetMapping("register")
