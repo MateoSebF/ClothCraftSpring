@@ -9,6 +9,7 @@ import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,8 +115,10 @@ public class UserController {
         return response;
     }
     @GetMapping("/validate")
-    public ResponseEntity<Boolean> validateUser(@RequestParam(name = "userId", required = true) String userId){
-        return new ResponseEntity<>(true,HttpStatus.OK);
+    public ResponseEntity<String> validateUser(@RequestParam(name = "userId", required = true) String userId, HttpServletRequest request){
+        String cookie = request.getHeader("cookie");
+        String authTokenHeader = cookie.replace("authToken=", "");
+        return new ResponseEntity<>(authTokenHeader,HttpStatus.OK);
     }
 
     @GetMapping("/all")
