@@ -113,6 +113,10 @@ public class UserController {
         }
         return response;
     }
+    @GetMapping("/validate")
+    public ResponseEntity<Boolean> validateUser(){
+        return new ResponseEntity<>(true,HttpStatus.OK);
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
