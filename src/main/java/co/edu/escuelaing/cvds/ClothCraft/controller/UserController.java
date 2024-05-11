@@ -114,7 +114,7 @@ public class UserController {
         return response;
     }
     @GetMapping("/validate")
-    public ResponseEntity<Boolean> validateUser(){
+    public ResponseEntity<Boolean> validateUser(@RequestParam(name = "userId", required = true) String userId){
         return new ResponseEntity<>(true,HttpStatus.OK);
     }
 
