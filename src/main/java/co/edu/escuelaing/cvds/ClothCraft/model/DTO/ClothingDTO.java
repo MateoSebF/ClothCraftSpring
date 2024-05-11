@@ -18,7 +18,7 @@ import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 public class ClothingDTO {
     private String id;
     private String name;
-    private byte[] image;
+    private String image;
     private String color;
     private String size;
     private ClothingType type;
