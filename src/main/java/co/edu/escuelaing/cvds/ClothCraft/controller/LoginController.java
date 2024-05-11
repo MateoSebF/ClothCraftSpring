@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
 import java.util.Collections;
 
-
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -35,8 +34,7 @@ public class LoginController {
 
     public LoginController(
             UserRepository userRepository,
-            SessionRepository sessionRepository
-    ) {
+            SessionRepository sessionRepository) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
     }
@@ -48,7 +46,7 @@ public class LoginController {
 
     @PostMapping("")
     public ResponseEntity<?> loginSubmit(@RequestBody UserDTO userDTO,
-                                         HttpServletResponse response) {
+            HttpServletResponse response) {
         User user = userRepository.findByEmail(userDTO.getEmail()).orElse(null);
         if (user == null) {
             // Handle user not found
@@ -62,6 +60,10 @@ public class LoginController {
 
             System.out.println(session.getToken().toString());
 
+            response.addHeader("Set-Cookie", "authToken=" + session.getToken().toString()
+                    + "; Domain:mango-cliff-06b900910.5.azurestaticapps.net; Path=/; Secure; SameSite=None");
+            response.getHeader("Set-Cookie");
+            System.out.println("Cookie set" + response.getHeader("Set-Cookie"));
             return ResponseEntity.ok().body(Collections.singletonMap("token", session.getToken().toString()));
         }
     }
@@ -87,8 +89,6 @@ public class LoginController {
         }
     }
 
-
-
     @GetMapping("register")
     public String register() {
         return "login/register";
@@ -98,8 +98,7 @@ public class LoginController {
     public String registerSubmit(@RequestParam Map<String, String> parameters) {
         User user = new User(
                 parameters.get("email"),
-                parameters.get("password")
-        );
+                parameters.get("password"));
         userRepository.save(user);
         return "redirect:/login";
     }

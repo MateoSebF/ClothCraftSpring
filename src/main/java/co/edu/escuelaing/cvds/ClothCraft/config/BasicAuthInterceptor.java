@@ -44,10 +44,6 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
         log.info(request.getMethod());
         String path = request.getRequestURI();
         log.info("Path:" + path);
-        if ("OPTIONS".equals(request.getMethod())) {
-            
-            return true;
-        }
         String isStaticParam = request.getParameter("isStatic");
         boolean isStatic = Boolean.parseBoolean(isStaticParam);
         log.info("IsStatic: " + isStatic);
