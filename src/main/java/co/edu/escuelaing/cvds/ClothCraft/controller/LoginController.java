@@ -8,6 +8,8 @@ import co.edu.escuelaing.cvds.ClothCraft.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +27,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Controller
 @RequestMapping(value = "/login")
 public class LoginController {
@@ -74,7 +77,7 @@ public class LoginController {
         String cookie = request.getHeader("Set-Cookie");
         String authTokenHeader = cookie.replace("authToken=", "");
         System.out.println("Auth token from body: " + authTokenHeader);
-
+        log.info("Auth token from body: " + authTokenHeader);
         if (authTokenHeader != null) {
             UUID token = UUID.fromString(authTokenHeader);
             Session session = sessionRepository.findByToken(token);
