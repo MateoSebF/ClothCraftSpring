@@ -116,7 +116,7 @@ public class UserController {
     }
     @GetMapping("/validate")
     public ResponseEntity<String> validateUser(@RequestParam(name = "userId", required = true) String userId, HttpServletRequest request){
-        String cookie = request.getHeader("cookie");
+        String cookie = request.getHeader("Set-Cookie");
         String authTokenHeader = cookie.replace("authToken=", "");
         return new ResponseEntity<>(authTokenHeader,HttpStatus.OK);
     }

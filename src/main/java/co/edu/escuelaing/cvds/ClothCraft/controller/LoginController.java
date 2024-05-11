@@ -71,7 +71,7 @@ public class LoginController {
     @Transactional
     @PostMapping("/logout")
     public ResponseEntity<?> logoutSubmit(HttpServletRequest request, HttpServletResponse response) {
-        String cookie = request.getHeader("cookie");
+        String cookie = request.getHeader("Set-Cookie");
         String authTokenHeader = cookie.replace("authToken=", "");
         System.out.println("Auth token from body: " + authTokenHeader);
 
