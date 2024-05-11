@@ -70,8 +70,8 @@ public class LoginController {
 
     @Transactional
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutSubmit(@RequestParam Map<String, String> parameters, HttpServletResponse response) {
-        String authTokenHeader = parameters.get("Cookie");
+    public ResponseEntity<?> logoutSubmit(@RequestParam(name = "token", required = true) String authToken, HttpServletResponse response) {
+        String authTokenHeader = authToken;
         System.out.println("Auth token from body: " + authTokenHeader);
 
         if (authTokenHeader != null) {

@@ -64,7 +64,10 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
                     response.sendError(HttpServletResponse.SC_EXPECTATION_FAILED, "SessionTimeout");
                     return false;
                 } else {
-
+                    if (path.contains("login/logout")) {
+                        sessionRepository.delete(session);
+                        return true;
+                    }
                     String requestURI = request.getRequestURI();
                     String queryString = request.getQueryString() != null ? request.getQueryString() : "";
                     String userIdParam = "userId=" + userId;
