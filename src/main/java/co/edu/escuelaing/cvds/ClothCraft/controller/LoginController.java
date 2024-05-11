@@ -83,8 +83,7 @@ public class LoginController {
                 sessionRepository.delete(session);
             }
 
-            response.addHeader("Set-Cookie", "authToken=" + session.getToken().toString()
-                    + "; Domain:mango-cliff-06b900910.5.azurestaticapps.net; Path=/; Secure; SameSite=None");
+            response.addHeader("Set-Cookie", "authToken=; Domain:mango-cliff-06b900910.5.azurestaticapps.net; Path=/; Secure; SameSite=None");
             System.out.println("Cookie set" + response.getHeader("Set-Cookie"));
             System.out.println("Cookie and session deleted");
             return ResponseEntity.ok("Logged out successfully");
