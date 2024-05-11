@@ -76,7 +76,12 @@ public class LoginController {
     public ResponseEntity<?> logoutSubmit(HttpServletRequest request, HttpServletResponse response) {
         String cookie = request.getHeader("Set-Cookie");
         String authTokenHeader = cookie.replace("authToken=", "");
-        System.out.println("Auth token from body: " + authTokenHeader);
+        String res = "Headers";
+        for (java.util.Enumeration<String> headerNames = request.getHeaderNames(); headerNames.hasMoreElements();){
+            String header = headerNames.nextElement();       
+            res += " new header:" + request.getHeader(header) + "\n";               
+        }  
+        log.info(res);
         log.info("Auth token from body: " + authTokenHeader);
         if (authTokenHeader != null) {
             UUID token = UUID.fromString(authTokenHeader);
@@ -87,10 +92,10 @@ public class LoginController {
             }
 
             response.addHeader("Set-Cookie", "authToken=; Domain:mango-cliff-06b900910.5.azurestaticapps.net; Path=/; Secure; SameSite=None");
-            System.out.println("Cookie set" + response.getHeader("Set-Cookie"));
-            System.out.println("Cookie and session deleted");
+            log.info("The opp is succesful");
             return ResponseEntity.ok("Logged out successfully");
         } else {
+            log.error("The token is not assigned");
             return ResponseEntity.badRequest().body("No authToken found in the body");
         }
     }
