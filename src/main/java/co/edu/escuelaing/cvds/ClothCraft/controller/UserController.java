@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 /*
  * The class UserController is a controller that allows to manage the users
  */
@@ -244,30 +245,27 @@ public class UserController {
     }
 
     
-
+    /*
+     * Method used to update the photo profile of a user
+     * 
+     * @param userId the id of the user
+     * 
+     * @param userDTO the user to be updated
+     * 
+     * @return ResponseEntity<String>
+     */
     @PatchMapping("/photo")
-    public ResponseEntity<String> updatePhotoProfile(HttpServletRequest request, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<String> updatePhotoProfile(@RequestParam(name = "userId", required = true) String userId
+    , @RequestBody UserDTO userDTO) {
         try {
-            // Obtener el token de autenticación del encabezado de la solicitud
-            String authToken = request.getHeader("cookie");
-            authToken = authToken.replace("authToken=", "");
-
             String photo = userDTO.getPhotoProfile();
-
-            System.out.println(photo);
-
-            // Obtener el usuario asociado con el token de autenticación
-            User user = userService.getUserByToken(UUID.fromString(authToken));
-
+            User user = userService.getUserById(userId);
             if (user != null) {
-                // Eliminar el prefijo de "data:image/png;base64," si está presente
                 if (photo.startsWith("data:image/png;base64,")) {
                     photo = photo.substring("data:image/png;base64,".length());
                 }
-
                 user.setPhotoProfile(photo);
-                userRepository.save(user);
-
+                userService.updateUser(userId, user);
                 return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(photo);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -280,13 +278,16 @@ public class UserController {
         }
     }
 
-
-
+    /*
+     * Method used to get the photo profile of a user
+     * 
+     * @param userId the id of the user
+     * 
+     * @return ResponseEntity<String>
+     */
     @GetMapping("/photo")
-    public ResponseEntity<String> getPhotoProfile(HttpServletRequest request) {
-        String authToken = request.getHeader("cookie");
-        authToken = authToken.replace("authToken=", "");
-        User user = userService.getUserByToken(UUID.fromString(authToken));
+    public ResponseEntity<String> getPhotoProfile(@RequestParam(name = "userId", required = true) String userId) {
+        User user = userService.getUserById(userId);
         if (user != null) {
             String base64Image = user.getPhotoProfile();
             return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(base64Image);
