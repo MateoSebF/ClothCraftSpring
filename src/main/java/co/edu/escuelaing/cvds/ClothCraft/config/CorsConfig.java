@@ -13,11 +13,19 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/*
+ * Class that handles the CORS configuration
+ */
 @Configuration
 @EnableWebMvc
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsConfig implements WebMvcConfigurer {
 
+    /*
+     * Method that registers the CORS filter
+     * 
+     * @return FilterRegistrationBean, the filter registration bean
+     */
     @SuppressWarnings("rawtypes")
     @Bean
     public FilterRegistrationBean corsFilter() {

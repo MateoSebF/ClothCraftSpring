@@ -10,13 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
+/*
+ * The class OutfitController is a controller that allows to manage the outfits
+ */
 @RestController
 @RequestMapping("/outfit")
 public class OutfitController {
@@ -26,30 +27,40 @@ public class OutfitController {
     @Autowired
     private ClothingService clothingService;
 
-
+    /*
+     * Method that gets an outfit by its id
+     * 
+     * @param id, the id of the outfit
+     * 
+     * @return ResponseEntity<OutfitDTO>, the outfit with the id
+     */
     @GetMapping("/{id}")
     public ResponseEntity<OutfitDTO> getOutfitById(@PathVariable String id) {
         Outfit outfit = outfitService.getOutfitById(id);
-        if (outfit != null) {
+        if (outfit != null)
             return new ResponseEntity<>(outfit.toDTO(), HttpStatus.OK);
-        } else {
+        else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
-
+    /*
+     * Method that gets all the categories
+     * 
+     * @return ResponseEntity<List<String>>, the list of all the categories
+     */
     @GetMapping("/categories")
     public ResponseEntity<List<String>> getCategories() {
-        log.info("The user is getting the categories of the outfits.");
         List<String> categories = new ArrayList<>();
-        
-        for (Category category : Category.values()) {
+        for (Category category : Category.values())
             categories.add(category.toString());
-        }
-        log.info(categories.toString());
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
+    /*
+     * Method that gets all the outfits
+     * 
+     * @return ResponseEntity<List<OutfitDTO>>, the list of all the outfits
+     */
     @GetMapping("/all")
     public ResponseEntity<List<OutfitDTO>> getAllOutfits() {
         List<Outfit> outfitList = outfitService.getAllOutfits();
@@ -58,45 +69,64 @@ public class OutfitController {
                 .collect(Collectors.toList());
         return new ResponseEntity<>(outfitDTOList, HttpStatus.OK);
     }
-    
-    @PostMapping
-    public ResponseEntity<OutfitDTO> createOutfit(@RequestBody OutfitDTO outfitDTO) {
-        Outfit outfit = outfitService.createOutfit(convertToObject(outfitDTO));
-        if (outfit != null) {
-            return new ResponseEntity<>(outfit.toDTO(), HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
 
+    /*
+     * Method that updates an outfit
+     * 
+     * @param id, the id of the outfit to be updated
+     * 
+     * @param outfitDTO, the outfit to be updated
+     * 
+     * @return ResponseEntity<OutfitDTO>, the updated outfit
+     */
     @PutMapping("/{id}")
     public ResponseEntity<OutfitDTO> updateOutfit(@PathVariable String id, @RequestBody OutfitDTO outfitDTO) {
         Outfit updatedOutfit = outfitService.updateOutfit(id, convertToObject(outfitDTO));
-        if (updatedOutfit != null) {
+        if (updatedOutfit != null)
             return new ResponseEntity<>(updatedOutfit.toDTO(), HttpStatus.OK);
-        } else {
+        else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
+    /*
+     * Method that deletes an outfit
+     * 
+     * @param id, the id of the outfit to be deleted
+     * 
+     * @return ResponseEntity<Void>, the response of the server
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOutfit(@PathVariable String id) {
         boolean deleted = outfitService.deleteOutfit(id);
-        if (deleted) {
+        if (deleted)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
+        else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
+    /*
+     * Method that gets an outfit by its id
+     * 
+     * @param id, the id of the outfit
+     * 
+     * @return Outfit, the outfit with the id
+     */
     public Outfit getOutfitEntityById(String id) {
         Outfit outfit = outfitService.getOutfitById(id);
         return outfit;
     }
 
+    /*
+     * Method that converts an OutfitDTO to an Outfit
+     * 
+     * @param outfitDTO, the outfit to be converted
+     * 
+     * @return Outfit, the converted outfit
+     */
     private Outfit convertToObject(OutfitDTO outfitDTO) {
         List<Clothing> clothings = new ArrayList<>();
-        for (String clothingId : outfitDTO.getClothesIds()) clothings.add(clothingService.getClothingById(clothingId));
+        for (String clothingId : outfitDTO.getClothesIds())
+            clothings.add(clothingService.getClothingById(clothingId));
         Outfit outfit = outfitDTO.toEntity(clothings);
         return outfit;
     }

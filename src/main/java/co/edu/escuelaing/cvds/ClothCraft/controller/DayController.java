@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/*
+ * Class that handles the day controller
+ */
 @RestController
 @RequestMapping("/day")
 public class DayController {
@@ -39,18 +42,22 @@ public class DayController {
     @Autowired
     private ClothingService clothingService;
 
+    /*
+     * Method that gets the day by id
+     * 
+     * @param id
+     * 
+     * @return ResponseEntity<DayDTO>
+     */
     @GetMapping("/{date}")
     public ResponseEntity<List<ClothingDTO>> getClothingByOutfitAndDate(
             @RequestParam(name = "userId", required = true) String userId, @PathVariable Date date) {
-        ResponseEntity<List<ClothingDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         User user = userService.getUserById(userId);
-
         if (user != null) {
             Day day = user.getCalendary().getDays().stream()
                     .filter(d -> d.getDate().equals(date))
                     .findFirst()
                     .orElse(null);
-
             if (day != null && day.getOutfit() != null) {
                 OutfitDTO outfitDTO = day.getOutfit().toDTO();
                 List<String> clothingIds = outfitDTO.getClothesIds();
@@ -58,14 +65,19 @@ public class DayController {
                 List<ClothingDTO> clothingDTOList = clothingList.stream()
                         .map(Clothing::toDTO)
                         .collect(Collectors.toList());
-
-                response = new ResponseEntity<>(clothingDTOList, HttpStatus.OK);
+                return new ResponseEntity<>(clothingDTOList, HttpStatus.OK);
             }
         }
-        return response;
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-
+    /*
+     * Method that gets the day by id
+     * 
+     * @param id
+     * 
+     * @return ResponseEntity<DayDTO>
+     */
     private List<Clothing> getClothingByClothingIds(List<String> clothingIds) {
         List<Clothing> clothingList = new ArrayList<>();
         for (String clothingId : clothingIds) {
@@ -77,7 +89,11 @@ public class DayController {
         return clothingList;
     }
 
-
+    /*
+     * Method that gets the days
+     * 
+     * @return ResponseEntity<List<DayDTO>>, the list of all the days
+     */
     @GetMapping("/all")
     public ResponseEntity<List<DayDTO>> getAllDays() {
         List<Day> days = dayService.getAllDays();
@@ -87,17 +103,15 @@ public class DayController {
         return new ResponseEntity<>(dayDTOs, HttpStatus.OK);
     }
 
-
-    @PostMapping
-    public ResponseEntity<DayDTO> createDay(@RequestBody DayDTO dayDTO) {
-        Day day = dayService.createDay(convertToObject(dayDTO));
-        if (day != null) {
-            return new ResponseEntity<>(day.toDTO(), HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
+    /*
+     * Method that creates a day for a specific user
+     * 
+     * @param userId, the id of the user to create the day
+     * 
+     * @param dayDTO, the day to create
+     * 
+     * @return ResponseEntity<DayDTO>, the created day
+     */
     @PostMapping("/user")
     public ResponseEntity<DayDTO> createOutfitForUserAndDay(
             @RequestParam(name = "userId", required = true) String userId,
@@ -108,31 +122,51 @@ public class DayController {
             day.setCalendary(user.getCalendary());
             day = dayService.createDay(day);
             return new ResponseEntity<>(day.toDTO(), HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        } else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    /*
+     * Method that updates the day
+     * 
+     * @param id, the id of the day to update
+     * 
+     * @param dayDTO, the day to update
+     * 
+     * @return ResponseEntity<DayDTO>, the updated day
+     */
     @PutMapping("/{id}")
     public ResponseEntity<DayDTO> updateDay(@PathVariable String id, @RequestBody DayDTO dayDTO) {
         Day updatedDay = dayService.updateDay(id, convertToObject(dayDTO));
-        if (updatedDay != null) {
+        if (updatedDay != null)
             return new ResponseEntity<>(updatedDay.toDTO(), HttpStatus.OK);
-        } else {
+        else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
+    /*
+     * Method that deletes the day
+     * 
+     * @param id, the id of the day to delete
+     * 
+     * @return ResponseEntity<Void>, the status of the deletion
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDay(@PathVariable String id) {
         boolean deleted = dayService.deleteDay(id);
-        if (deleted) {
+        if (deleted)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
+        else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
+    /*
+     * Method that converts the dayDTO to a day object
+     * 
+     * @param dayDTO, the dayDTO to convert
+     * 
+     * @return Day, the day object
+     */
     private Day convertToObject(DayDTO dayDTO) {
         Calendary calendary = dayDTO.getCalendaryId() != null
                 ? calendaryService.getCalendaryById(dayDTO.getCalendaryId())

@@ -11,11 +11,11 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import java.util.Collections;
 
@@ -24,109 +24,87 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 
-
+/*
+ * Class that handles the login and logout of the users
+ */
 @Slf4j
 @Controller
 @RequestMapping(value = "/login")
 public class LoginController {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    private final SessionRepository sessionRepository;
+    @Autowired
+    private SessionRepository sessionRepository;
 
-    public LoginController(
-            UserRepository userRepository,
-            SessionRepository sessionRepository) {
-        this.userRepository = userRepository;
-        this.sessionRepository = sessionRepository;
-    }
-
-    @GetMapping("")
-    public String login() {
-        return "Yei";
-    }
-
+    /*
+     * Method that handles the login of the user
+     * 
+     * @param userDTO, the user to be logged in
+     * 
+     * @param response, the response to be sent to the server
+     * 
+     * @return ResponseEntity, the response to be sent to the server
+     */
     @PostMapping("")
     public ResponseEntity<?> loginSubmit(@RequestBody UserDTO userDTO,
             HttpServletResponse response) {
         User user = userRepository.findByEmail(userDTO.getEmail()).orElse(null);
-        if (user == null) {
-            // Handle user not found
-            return ResponseEntity.badRequest().body("Usuario no encontrado");
-        } else if (!user.getPassword().equals(hashPassword(userDTO.getPassword()))) {
-            // Handle incorrect password
-            return ResponseEntity.badRequest().body("Contraseña incorrecta");
-        } else {
+        ResponseEntity<?> responseEntity;
+        if (user == null)
+            responseEntity = ResponseEntity.badRequest().body("User not found");
+        else if (!user.getPassword().equals(hashPassword(userDTO.getPassword())))
+            responseEntity = ResponseEntity.badRequest().body("Wrong password");
+        else {
+            // Create a new session
             Session session = new Session(UUID.randomUUID(), Instant.now(), user);
             sessionRepository.save(session);
-
-            System.out.println(session.getToken().toString());
-
+            // Set to the response the cookie with the token
             response.addHeader("Set-Cookie", "authToken=" + session.getToken().toString()
-                    + "; Domain:mango-cliff-06b900910.5.azurestaticapps.net; Path=/; Secure; SameSite=None");
-            System.out.println("Cookie set" + response.getHeader("Set-Cookie"));
-            return ResponseEntity.ok().body(Collections.singletonMap("token", session.getToken().toString()));
+                    + "; Path=/; Secure; SameSite=None");
+            log.info("The user " + user.getEmail() + " has logged in successfully");
+            responseEntity = ResponseEntity.ok().body(Collections.singletonMap("token", session.getToken().toString()));
         }
+        return responseEntity;
     }
 
+    /*
+     * Method that handles the logout of the user
+     * 
+     * @param request, the request to be sent to the server
+     * 
+     * @param response, the response to be sent to the server
+     * 
+     * @return ResponseEntity, the response to be sent to the server
+     */
     @Transactional
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutSubmit(HttpServletRequest request, HttpServletResponse response) {
-        String res = "Headers";
-        for (java.util.Enumeration<String> headerNames = request.getHeaderNames(); headerNames.hasMoreElements();){
-            String header = headerNames.nextElement();       
-            res += " new header:" + request.getHeader(header) + "\n";               
-        }  
-        log.info(res);
-
-        String cookie = request.getHeader("cookie");
-        String authTokenHeader = cookie.replace("authToken=", "");
-        
-        log.info("Auth token from body: " + authTokenHeader);
-        if (authTokenHeader != null) {
-            UUID token = UUID.fromString(authTokenHeader);
+    public ResponseEntity<?> logoutSubmit(HttpServletRequest request,
+            @CookieValue("authToken") String authToken, HttpServletResponse response) {
+        if (authToken != null) {
+            UUID token = UUID.fromString(authToken);
             Session session = sessionRepository.findByToken(token);
-
             if (session != null) {
                 sessionRepository.delete(session);
             }
-
+            // Delete the cookie and pass an empty value to the authToken
             response.addHeader("Set-Cookie", "authToken=; Path=/; Secure; SameSite=None");
-            log.info("The opp is succesful");
+            log.info("The user " + session.getUser().getEmail() + " has logged out successfully");
             return ResponseEntity.ok("Logged out successfully");
-        } else {
-            log.error("The token is not assigned");
+        } else
             return ResponseEntity.badRequest().body("No authToken found in the body");
-        }
     }
 
-    @GetMapping("register")
-    public String register() {
-        return "login/register";
-    }
-
-    @PostMapping("register")
-    public String registerSubmit(@RequestParam Map<String, String> parameters) {
-        User user = new User(
-                parameters.get("email"),
-                parameters.get("password"));
-        userRepository.save(user);
-        return "redirect:/login";
-    }
-
-    @GetMapping("protected/example")
-    public String protectedExample() {
-        return "login/protected";
-    }
-
-    @GetMapping("protected/admin")
-    public String protectedAdmin() {
-        return "login/admin";
-    }
-
+    /*
+     * Method that hashes the password of the user
+     * 
+     * @param password, the password to be hashed
+     * 
+     * @return String, the hashed password
+     */
     private String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

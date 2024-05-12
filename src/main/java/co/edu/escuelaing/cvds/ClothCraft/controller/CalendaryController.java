@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/*
+ * Class that handles the calendary controller
+ */
 @RestController
 @RequestMapping("/calendary")
 public class CalendaryController {
@@ -28,60 +30,70 @@ public class CalendaryController {
     @Autowired
     private DayService dayService;
 
+    /*
+     * Method that gets the calendary by id
+     * 
+     * @param id, the id of the calendary to get
+     * 
+     * @return ResponseEntity<CalendaryDTO>, the calendary with the id
+     */
     @GetMapping("/{id}")
     public ResponseEntity<CalendaryDTO> getCalendaryById(@PathVariable String id) {
         Calendary calendary = calendaryService.getCalendaryById(id);
-        if (calendary != null) {
+        if (calendary != null)
             return new ResponseEntity<>(calendary.toDTO(), HttpStatus.OK);
-        } else {
+        else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<CalendaryDTO>> getAllCalendary() {
-        List<Calendary> calendaryList = calendaryService.getAllCalendary();
-        List<CalendaryDTO> calendaryDTOList = calendaryList.stream()
-                .map(Calendary::toDTO)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(calendaryDTOList, HttpStatus.OK);
-    }
-
-    @PostMapping
-    public ResponseEntity<CalendaryDTO> createCalendary(@RequestBody CalendaryDTO calendaryDTO) {
-        Calendary calendary = convertToObject(calendaryDTO);
-        calendary = calendaryService.createCalendary(calendary);
-        if (calendary != null) {
-            return new ResponseEntity<>(calendary.toDTO(), HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
+    /*
+     * Method thaht modifies the calendary
+     * 
+     * @param id, the id of the calendary to modify
+     * 
+     * @param calendaryDTO, the calendary to modify
+     * 
+     * @return ResponseEntity<CalendaryDTO>, the modified calendary
+     */
     @PutMapping("/{id}")
-    public ResponseEntity<CalendaryDTO> updateCalendary(@PathVariable String id, @RequestBody CalendaryDTO calendaryDTO) {
+    public ResponseEntity<CalendaryDTO> updateCalendary(@PathVariable String id,
+            @RequestBody CalendaryDTO calendaryDTO) {
         Calendary calendary = convertToObject(calendaryDTO);
         calendary = calendaryService.updateCalendary(id, calendary);
-        if (calendary != null) {
+        if (calendary != null)
             return new ResponseEntity<>(calendary.toDTO(), HttpStatus.OK);
-        } else {
+        else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
+    /*
+     * Mehtods that deletes the calendary
+     * 
+     * @param id, the id of the calendary to delete
+     * 
+     * @return ResponseEntity<Void>, the status of the deletion
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCalendary(@PathVariable String id) {
         boolean deleted = calendaryService.deleteCalendary(id);
-        if (deleted) {
+        if (deleted)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
+        else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
+
+    /*
+     * Method that converts the calendaryDTO to a calendary object
+     * 
+     * @param calendaryDTO, the calendaryDTO to convert
+     * 
+     * @return Calendary, the calendary object
+     */
     private Calendary convertToObject(CalendaryDTO calendaryDTO) {
-        User user =  calendaryDTO.getUserId() != null ? userService.getUserById(calendaryDTO.getUserId()) : null;
+        User user = calendaryDTO.getUserId() != null ? userService.getUserById(calendaryDTO.getUserId()) : null;
         List<Day> days = new ArrayList<>();
-        for (String daysId : calendaryDTO.getDayIds()) days.add(dayService.getDayById(daysId));
+        for (String daysId : calendaryDTO.getDayIds())
+            days.add(dayService.getDayById(daysId));
         Calendary calendary = calendaryService.createCalendary(calendaryDTO.toEntity(user, days));
         return calendary;
     }

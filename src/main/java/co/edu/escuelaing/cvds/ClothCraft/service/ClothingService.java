@@ -50,4 +50,9 @@ public class ClothingService {
             return false;
         }
     }
+
+    public List<Clothing> getAllClothingByType(String type) {
+        return clothingRepository.findByType(type);
+    }
+
 }

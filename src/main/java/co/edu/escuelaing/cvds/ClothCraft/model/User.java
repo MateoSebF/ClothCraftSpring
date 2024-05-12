@@ -96,4 +96,8 @@ public class User {
         return wardrobe.getNumClothing();
     }
 
+    public int getNumOutfits() {
+        return wardrobe.getNumOutfits();
+    }
+
 }
