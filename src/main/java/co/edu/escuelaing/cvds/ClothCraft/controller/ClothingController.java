@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/*
+ * Class that handles the clothing controller
+ */
 @RestController
 @RequestMapping("/clothing")
 public class ClothingController {
@@ -36,27 +39,44 @@ public class ClothingController {
     @Autowired
     private OutfitService outfitService;
 
+    /*
+     * Method that gets the clothing by id
+     * 
+     * @param id, the id of the clothing to get
+     * 
+     * @return ResponseEntity<ClothingDTO>, the clothing with the id
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ClothingDTO> getClothingById(@PathVariable String id) {
         Clothing clothing = clothingService.getClothingById(id);
-        if (clothing != null) {
+        if (clothing != null)
             return new ResponseEntity<>(clothing.toDTO(), HttpStatus.OK);
-        } else {
+        else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
+    /*
+     * Method that gets the image of the clothing by id
+     * 
+     * @param id, the id of the clothing to get the image
+     * 
+     * @return ResponseEntity<String>, the image of the clothing with the id
+     */
     @GetMapping("/image/{id}")
     public ResponseEntity<String> getImagen(@PathVariable String id) {
         Clothing clothing = clothingService.getClothingById(id);
         if (clothing != null) {
             String image = clothing.getImage();
             return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
-        } else {
+        } else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
+    /*
+     * Method that gets all the clothing
+     * 
+     * @return ResponseEntity<List<ClothingDTO>>, the list of all the clothing
+     */
     @GetMapping("/all")
     public ResponseEntity<List<ClothingDTO>> getAllClothing() {
         List<Clothing> clothingList = clothingService.getAllClothing();
@@ -66,31 +86,61 @@ public class ClothingController {
         return new ResponseEntity<>(clothingDTOList, HttpStatus.OK);
     }
 
+    /*
+     * Method that gets the clothing by type
+     * 
+     * @param type, the type of the clothing to get(SHIRT, PANTS, SHOES, HAT, SCARF,
+     * ACCESSORIES, OTHER)
+     * 
+     * @return ResponseEntity<List<ClothingDTO>>, the list of clothing with the type
+     */
+    @GetMapping("/AllByType/{type}")
+    public ResponseEntity<List<ClothingDTO>> getAllClothingByType(@PathVariable String typeC) {
+        ClothingType type = ClothingType.valueOf(typeC);
+        List<Clothing> clothingList = clothingService.getAllClothingByType(type);
+        List<ClothingDTO> clothingDTOList = clothingList.stream()
+                .map(Clothing::toDTO)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(clothingDTOList, HttpStatus.OK);
+    }
+
+    /*
+     * Method that gets the clothing by type of a specific user
+     * 
+     * @param type, the type of the clothing to get(SHIRT, PANTS, SHOES, HAT, SCARF,
+     * ACCESSORIES, OTHER)
+     * 
+     * @return ResponseEntity<List<ClothingDTO>>, the list of clothing with the type
+     */
     @GetMapping("/byType/{type}")
     public ResponseEntity<List<ClothingDTO>> getClothingByType(@PathVariable String type,
-
             @RequestParam(name = "userId", required = true) String userId) {
-        ResponseEntity<List<ClothingDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         User user = userService.getUserById(userId);
         if (user != null) {
             List<Clothing> clothingList = user.getAllClothingByType(type);
             List<ClothingDTO> clothingDTOList = clothingList.stream()
                     .map(Clothing::toDTO)
                     .collect(Collectors.toList());
-            response = new ResponseEntity<>(clothingDTOList, HttpStatus.OK);
-        }
-        return response;
+            return new ResponseEntity<>(clothingDTOList, HttpStatus.OK);
+        } else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    /*
+     * Method that creates a clothing for a specific user
+     * 
+     * @param clothingDTO, the clothing to create
+     * 
+     * @param userId, the id of the user to create the clothing
+     * 
+     * @return ResponseEntity<ClothingDTO>, the clothing created
+     */
     @PostMapping("")
     public ResponseEntity<ClothingDTO> createClothingForUser(@RequestBody ClothingDTO clothingDTO,
-            @RequestParam(name = "userId", required = true ) String userId) {
-
+            @RequestParam(name = "userId", required = true) String userId) {
         User user = userService.getUserById(userId);
-        ResponseEntity<ClothingDTO> response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if (user != null) {
             Clothing clothing = convertToObject(clothingDTO);
-            System.out.println(clothing);
             clothing.setOutfits(new ArrayList<>());
             Set<Wardrobe> wardrobes = new HashSet<>();
             Wardrobe wardrobe = wardrobeService.getWardrobeByUser(user);
@@ -99,33 +149,54 @@ public class ClothingController {
             clothing = clothingService.createClothing(clothing);
             wardrobe.addClothing(clothing);
             wardrobeService.updateWardrobe(wardrobe.getId(), wardrobe);
-            if (clothing != null) {
-                response = new ResponseEntity<>(clothing.toDTO(), HttpStatus.CREATED);
-            }
-        }
-        return response;
+            if (clothing != null)
+                return new ResponseEntity<>(clothing.toDTO(), HttpStatus.CREATED);
+            else
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    /*
+     * Method that updates the clothing
+     * 
+     * @param id, the id of the clothing to update
+     * 
+     * @param clothingDTO, the clothing to update
+     * 
+     * @return ResponseEntity<ClothingDTO>, the updated clothing
+     */
     @PutMapping("/{id}")
     public ResponseEntity<ClothingDTO> updateClothing(@PathVariable String id, @RequestBody ClothingDTO clothingDTO) {
         Clothing updatedClothing = clothingService.updateClothing(id, convertToObject(clothingDTO));
-        if (updatedClothing != null) {
+        if (updatedClothing != null)
             return new ResponseEntity<>(updatedClothing.toDTO(), HttpStatus.OK);
-        } else {
+        else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
+    /*
+     * Method that deletes the clothing
+     * 
+     * @param id, the id of the clothing to delete
+     * 
+     * @return ResponseEntity<Void>, the status of the deletion
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClothing(@PathVariable String id) {
         boolean deleted = clothingService.deleteClothing(id);
-        if (deleted) {
+        if (deleted)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
+        else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
+    /*
+     * Method that gets all the clothing types
+     * 
+     * @return ResponseEntity<List<ClothingType>>, the list of all the clothing
+     * types
+     */
     @GetMapping("/ClothingsTypes")
     public ResponseEntity<List<ClothingType>> getAllClothingTypes() {
         List<ClothingType> clothingTypes = new ArrayList<>();
@@ -134,6 +205,13 @@ public class ClothingController {
         return new ResponseEntity<>(clothingTypes, HttpStatus.OK);
     }
 
+    /*
+     * Method that converts a clothingDTO to a clothing
+     * 
+     * @param clothingDTO, the clothingDTO to convert
+     * 
+     * @return Clothing, the clothing converted
+     */
     private Clothing convertToObject(ClothingDTO clothingDTO) {
         HashSet<Wardrobe> wardrobes = new HashSet<>();
         for (String wardrobeId : clothingDTO.getWardrobeIds())
