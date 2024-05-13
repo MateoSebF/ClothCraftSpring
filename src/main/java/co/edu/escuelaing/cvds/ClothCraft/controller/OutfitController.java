@@ -3,16 +3,23 @@ package co.edu.escuelaing.cvds.ClothCraft.controller;
 import co.edu.escuelaing.cvds.ClothCraft.model.Category;
 import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
+import co.edu.escuelaing.cvds.ClothCraft.model.User;
+import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.OutfitDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.ClothingService;
 import co.edu.escuelaing.cvds.ClothCraft.service.OutfitService;
+import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
+import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /*
@@ -24,6 +31,10 @@ public class OutfitController {
 
     @Autowired
     private OutfitService outfitService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private WardrobeService wardrobeService;
     @Autowired
     private ClothingService clothingService;
 
@@ -70,6 +81,26 @@ public class OutfitController {
         return new ResponseEntity<>(outfitDTOList, HttpStatus.OK);
     }
 
+    @PostMapping
+    public ResponseEntity<OutfitDTO> createClothingForUser(@RequestBody OutfitDTO outfitDTO,
+            @RequestParam(name = "userId", required = true) String userId) {
+        User user = userService.getUserById(userId);
+        if (user != null) {
+            Outfit outfit = convertToObject(outfitDTO);
+            Set<Wardrobe> wardrobes = new HashSet<>();
+            Wardrobe wardrobe = wardrobeService.getWardrobeByUser(user);
+            wardrobes.add(wardrobe);
+            //outfit.setWardrobes(wardrobes);
+            outfit = outfitService.createOutfit(outfit);
+            wardrobe.addOutfit(outfit);
+            wardrobeService.updateWardrobe(wardrobe.getId(), wardrobe);
+            if (outfit != null)
+                return new ResponseEntity<>(outfit.toDTO(), HttpStatus.CREATED);
+            else
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
     /*
      * Method that updates an outfit
      * 

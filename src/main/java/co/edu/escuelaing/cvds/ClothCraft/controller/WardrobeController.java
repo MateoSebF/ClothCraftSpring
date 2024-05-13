@@ -138,6 +138,76 @@ public class WardrobeController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping("/upperLayers/{layer}")
+    public ResponseEntity<List<String>> getUpperCloth(
+            @RequestParam(name = "userId", required = true) String userId, 
+            @PathVariable String layer) {
+        User user = userService.getUserById(userId);
+        Wardrobe wardrobe = user.getWardrobe();
+        if (wardrobe != null)
+            return new ResponseEntity<>(
+                    wardrobe.getUpperLayers(layer).stream().map(ClothingType::name).collect(Collectors.toList()), HttpStatus.OK);        
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/lowerLayers/{layer}")
+    public ResponseEntity<List<String>> getLowerCloth(
+            @RequestParam(name = "userId", required = true) String userId, 
+            @PathVariable String layer) {
+        User user = userService.getUserById(userId);
+        Wardrobe wardrobe = user.getWardrobe();
+        if (wardrobe != null)
+            return new ResponseEntity<>(
+                    wardrobe.getLowerLayers(layer).stream().map(ClothingType::name).collect(Collectors.toList()), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/upperLayers/{layer}")
+    public ResponseEntity<List<String>> addUpperCloth(
+            @RequestParam(name = "userId", required = true) String userId, 
+            @PathVariable String layer) {
+        User user = userService.getUserById(userId);
+        Wardrobe wardrobe = user.getWardrobe();
+        if (wardrobe != null) {
+            wardrobe.addUpperLayer(layer);
+            System.out.println(wardrobe.getLayers());
+            wardrobeService.updateWardrobe(wardrobe.getId(), wardrobe);
+            return new ResponseEntity<>(wardrobe.getLayers().stream().map(ClothingType::name).collect(Collectors.toList()), HttpStatus.OK);
+        } else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/lowerLayers/{layer}")
+    public ResponseEntity<List<String>> addLowerCloth(
+            @RequestParam(name = "userId", required = true) String userId, 
+            @PathVariable String layer) {
+        User user = userService.getUserById(userId);
+        Wardrobe wardrobe = user.getWardrobe();
+        if (wardrobe != null) {
+            wardrobe.addLowerLayer(layer);
+            System.out.println(wardrobe.getLayers());
+            wardrobeService.updateWardrobe(wardrobe.getId(), wardrobe);
+            return new ResponseEntity<>(wardrobe.getLayers().stream().map(ClothingType::name).collect(Collectors.toList()), HttpStatus.OK);
+        } else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @DeleteMapping("/layers/{layer}")
+    public ResponseEntity<List<String>> deleteUpperCloth(
+            @RequestParam(name = "userId", required = true) String userId, 
+            @PathVariable String layer) {
+        User user = userService.getUserById(userId);
+        Wardrobe wardrobe = user.getWardrobe();
+        if (wardrobe != null) {
+            wardrobe.removeLayer(ClothingType.valueOf(layer));
+            wardrobeService.updateWardrobe(wardrobe.getId(), wardrobe);
+            return new ResponseEntity<>(wardrobe.getLayers().stream().map(ClothingType::name).collect(Collectors.toList()), HttpStatus.OK);
+        } else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     /*
      * Method that gets a wardrobe by its id
      * 

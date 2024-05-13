@@ -1,11 +1,9 @@
 package co.edu.escuelaing.cvds.ClothCraft.model;
 
 public enum ClothingType {
+    HAT,
+    ACCESSORIES,
     SHIRT,
     PANTS,
-    SHOES,
-    HAT,
-    SCARF,
-    ACCESSORIES,
-    OTHER
+    SHOES
 }

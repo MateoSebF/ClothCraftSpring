@@ -61,12 +61,12 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         log.info("BasicAuthInterceptor::preHandle()");
-        String path = request.getRequestURI();
+        StringBuffer path = request.getRequestURL();
         String isStaticParam = request.getParameter("isStatic");
         boolean isStatic = Boolean.parseBoolean(isStaticParam);
         boolean isAllowed = false;
         if (isStatic) {
-            log.info("The request to the path: " + path
+            log.info("The request to the path: " + path + "?" + request.getQueryString()
                     + " is static and sucessfully passed interceptor, with a method of: " + request.getMethod());
             isAllowed = true;
         } else {

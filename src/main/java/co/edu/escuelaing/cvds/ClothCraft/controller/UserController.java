@@ -50,9 +50,9 @@ public class UserController {
      * 
      * @return ResponseEntity<UserDTO>
      */
-    @GetMapping("/id/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable String id) {
-        User user = userService.getUserById(id);
+    @GetMapping("/id")
+    public ResponseEntity<UserDTO> getUserById(@RequestParam(name = "userId", required = true) String userId) {
+        User user = userService.getUserById(userId);
         if (user != null)
             return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
         else

@@ -1,6 +1,7 @@
 package co.edu.escuelaing.cvds.ClothCraft.service;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
+import co.edu.escuelaing.cvds.ClothCraft.model.ClothingType;
 import co.edu.escuelaing.cvds.ClothCraft.repository.ClothingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ public class ClothingService {
         }
     }
 
-    public List<Clothing> getAllClothingByType(String type) {
+    public List<Clothing> getAllClothingByType(ClothingType type) {
         return clothingRepository.findByType(type);
     }
 

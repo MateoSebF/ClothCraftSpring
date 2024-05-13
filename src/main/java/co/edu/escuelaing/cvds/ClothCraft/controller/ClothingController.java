@@ -95,7 +95,8 @@ public class ClothingController {
      * @return ResponseEntity<List<ClothingDTO>>, the list of clothing with the type
      */
     @GetMapping("/AllByType/{type}")
-    public ResponseEntity<List<ClothingDTO>> getAllClothingByType(@PathVariable String type) {
+    public ResponseEntity<List<ClothingDTO>> getAllClothingByType(@PathVariable String typeC) {
+        ClothingType type = ClothingType.valueOf(typeC);
         List<Clothing> clothingList = clothingService.getAllClothingByType(type);
         List<ClothingDTO> clothingDTOList = clothingList.stream()
                 .map(Clothing::toDTO)
@@ -140,7 +141,6 @@ public class ClothingController {
         User user = userService.getUserById(userId);
         if (user != null) {
             Clothing clothing = convertToObject(clothingDTO);
-            System.out.println(clothing);
             clothing.setOutfits(new ArrayList<>());
             Set<Wardrobe> wardrobes = new HashSet<>();
             Wardrobe wardrobe = wardrobeService.getWardrobeByUser(user);
