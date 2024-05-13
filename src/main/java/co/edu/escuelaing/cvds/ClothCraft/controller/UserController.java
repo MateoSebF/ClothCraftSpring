@@ -9,7 +9,6 @@ import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
-import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 /*
  * The class UserController is a controller that allows to manage the users
  */
-@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -201,11 +199,9 @@ public class UserController {
             user.setCalendary(calendary);
             // Save the user with the wardrobe and the calendary
             user = userService.updateUser(user.getId(), user);
-            log.info("User created with id: " + user.getId());
             return new ResponseEntity<>(user.toString(), HttpStatus.CREATED);
         } catch (Exception e) {
             String errorMessage = "An error occurred while processing the request: " + e.getMessage();
-            log.error(errorMessage);
             return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -273,7 +269,6 @@ public class UserController {
         } catch (Exception e) {
             // Capturar cualquier excepción y devolver un ResponseEntity con un mensaje de error
             String errorMessage = "An error occurred while updating the photo profile: " + e.getMessage();
-            log.error(errorMessage);
             return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

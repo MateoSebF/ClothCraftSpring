@@ -2,7 +2,6 @@ package co.edu.escuelaing.cvds.ClothCraft.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,7 +19,6 @@ import java.util.UUID;
  * Class that handles the basic authentication of the users
  * with the methods preHandle, postHandle and afterCompletion
  */
-@Slf4j
 @Component
 public class BasicAuthInterceptor implements HandlerInterceptor {
 
@@ -41,8 +39,6 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
         String sinAuthToken = null;
         if (cookieValue != null)
             sinAuthToken = cookieValue.replace("authToken=", "");
-        else
-            log.error("CookieValue is null");
         return sinAuthToken;
     }
 
@@ -60,14 +56,10 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        log.info("BasicAuthInterceptor::preHandle()");
-        StringBuffer path = request.getRequestURL();
         String isStaticParam = request.getParameter("isStatic");
         boolean isStatic = Boolean.parseBoolean(isStaticParam);
         boolean isAllowed = false;
         if (isStatic) {
-            log.info("The request to the path: " + path + "?" + request.getQueryString()
-                    + " is static and sucessfully passed interceptor, with a method of: " + request.getMethod());
             isAllowed = true;
         } else {
             String authToken = getCookieValue(request, "cookie");
@@ -117,7 +109,6 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
             ModelAndView modelAndView) throws Exception {
-        log.info("BasicAuthInterceptor::postHandle()");
     }
 
     /*
@@ -134,6 +125,5 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {
-        log.info("BasicAuthInterceptor::afterCompletion()");
     }
 }

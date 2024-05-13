@@ -8,7 +8,6 @@ import co.edu.escuelaing.cvds.ClothCraft.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -29,7 +28,6 @@ import java.util.UUID;
 /*
  * Class that handles the login and logout of the users
  */
-@Slf4j
 @Controller
 @RequestMapping(value = "/login")
 public class LoginController {
@@ -65,7 +63,6 @@ public class LoginController {
             // Set to the response the cookie with the token
             response.addHeader("Set-Cookie", "authToken=" + session.getToken().toString()
                     + "; Path=/; Secure; SameSite=None");
-            log.info("The user " + user.getEmail() + " has logged in successfully");
             responseEntity = ResponseEntity.ok().body(Collections.singletonMap("token", session.getToken().toString()));
         }
         return responseEntity;
@@ -92,7 +89,6 @@ public class LoginController {
             }
             // Delete the cookie and pass an empty value to the authToken
             response.addHeader("Set-Cookie", "authToken=; Path=/; Secure; SameSite=None");
-            log.info("The user " + session.getUser().getEmail() + " has logged out successfully");
             return ResponseEntity.ok("Logged out successfully");
         } else
             return ResponseEntity.badRequest().body("No authToken found in the body");
