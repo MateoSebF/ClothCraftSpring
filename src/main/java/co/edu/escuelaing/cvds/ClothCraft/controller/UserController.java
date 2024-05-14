@@ -173,7 +173,7 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
-        userDTO.escapeHtml();
+        //userDTO.escapeHtml();
         try {
             String imageUrl = "https://cdn-icons-png.flaticon.com/512/1361/1361728.png";
             URI uri = new URI(imageUrl);
