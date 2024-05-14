@@ -1,5 +1,7 @@
 package co.edu.escuelaing.cvds.ClothCraft.controller;
 
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
+
 import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.ClothingType;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
@@ -64,6 +66,7 @@ public class ClothingController {
      */
     @GetMapping("/image/{id}")
     public ResponseEntity<String> getImagen(@PathVariable String id) {
+        id = escapeHtml4(id);
         Clothing clothing = clothingService.getClothingById(id);
         if (clothing != null) {
             String image = clothing.getImage();
