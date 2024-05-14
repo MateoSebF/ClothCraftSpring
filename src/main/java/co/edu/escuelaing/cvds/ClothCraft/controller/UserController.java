@@ -10,6 +10,7 @@ import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
 
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -114,6 +115,7 @@ public class UserController {
      */
     @GetMapping("/photoProfile/{uniqueKey}")
     public ResponseEntity<String> getPhotoProfileByUniqueKey(@PathVariable String uniqueKey) {
+        uniqueKey = escapeHtml4(uniqueKey);
         ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         String photoProfile;
         User user = null;
@@ -171,6 +173,7 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
+        userDTO.escapeHtml();
         try {
             String imageUrl = "https://cdn-icons-png.flaticon.com/512/1361/1361728.png";
             URI uri = new URI(imageUrl);
