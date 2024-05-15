@@ -185,13 +185,25 @@ public class ClothingController {
      * 
      * @return ResponseEntity<Void>, the status of the deletion
      */
+    @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClothing(@PathVariable String id) {
-        boolean deleted = clothingService.deleteClothing(id);
-        if (deleted)
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        else
+    public ResponseEntity<Void> deleteClothing(@PathVariable String id, @RequestParam(name = "userId", required = true) String userId) {
+        User user = userService.getUserById(userId);
+        if (user == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Clothing clothing = clothingService.getClothingById(id);
+        if (clothing == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (clothing.getWardrobe() ==  user.getWardrobe()){
+            boolean deleted = clothingService.deleteClothing(id);
+            if (deleted)
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            else
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_AUTHORIZED);
+        
     }
 
     /*
