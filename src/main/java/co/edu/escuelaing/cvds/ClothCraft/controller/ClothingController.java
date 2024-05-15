@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import java.util.Random;
 /*
  * Class that handles the clothing controller
  */
@@ -219,6 +219,31 @@ public class ClothingController {
             clothingTypes.add(clothingType);
         return new ResponseEntity<>(clothingTypes, HttpStatus.OK);
     }
+
+
+    @GetMapping("/randomNonLiked")
+    public ResponseEntity<ClothingDTO> getRandomNonLikedClothing(@RequestParam(name = "userId", required = true) String userId) {
+        User user = userService.getUserById(userId);
+        if (user != null) {
+            Wardrobe wardrobe = user.getWardrobe();
+            if (wardrobe != null) {
+                Set<String> likedClothingIds = wardrobe.getLiked().stream().map(Clothing::getId).collect(Collectors.toSet());
+                List<Clothing> nonLikedClothing = clothingService.getAllClothingExcluding(likedClothingIds);
+                if (!nonLikedClothing.isEmpty()) {
+                    Clothing randomClothing = nonLikedClothing.get(new Random().nextInt(nonLikedClothing.size()));
+                    return new ResponseEntity<>(randomClothing.toDTO(), HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
 
     /*
      * Method that converts a clothingDTO to a clothing

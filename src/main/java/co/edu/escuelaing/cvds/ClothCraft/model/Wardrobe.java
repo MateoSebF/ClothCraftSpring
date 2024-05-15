@@ -45,6 +45,12 @@ public class Wardrobe {
     inverseJoinColumns = @JoinColumn(name = "outfit_id"))
     private Set<Outfit> outfits;
 
+    @ManyToMany
+    @JoinTable(name = "Wardrobe_Liked",
+            joinColumns = @JoinColumn(name = "wardrobe_id"),
+            inverseJoinColumns = @JoinColumn(name = "clothing_id"))
+    private Set<Clothing> liked = new HashSet<>();
+
     /*
      * Constructor used to create a Wardrobe object from a WardrobeDTO object
      * 
@@ -53,14 +59,15 @@ public class Wardrobe {
      * @param clothes the clothes that the wardrobe has
      */
 
-    public Wardrobe(String id, User user, Set<Clothing> clothes, Set<Outfit> outfits) {
-	      this.id = id;
+    public Wardrobe(String id, User user, Set<Clothing> clothes, Set<Outfit> outfits, Set<Clothing> liked) {
+        this.id = id;
         this.layers = new ArrayList<>();
         layers.add(ClothingType.SHIRT);
         layers.add(ClothingType.PANTS);
         this.user = user;
         this.clothes = clothes;
-        this.outfits = outfits; 
+        this.outfits = outfits;
+        this.liked = liked;
     }
 
     /*
@@ -75,9 +82,10 @@ public class Wardrobe {
         layers.add(ClothingType.PANTS);
         this.clothes = new HashSet<>();
         this.outfits = new HashSet<>();
+        this.liked = new HashSet<>();
     }
 
-	public WardrobeDTO toDTO() {
+    public WardrobeDTO toDTO() {
         Set<String> clothesIds = new HashSet<>();
         for (Clothing clothing : clothes) {
             clothesIds.add(clothing.getId());
@@ -86,7 +94,11 @@ public class Wardrobe {
         for (Outfit outfit : outfits) {
             outfitIds.add(outfit.getId());
         }
-        return new WardrobeDTO(id, user.getId(), clothesIds, outfitIds);
+        Set<String> likedIds = new HashSet<>();
+        for (Clothing clothing : liked) {
+            likedIds.add(clothing.getId());
+        }
+        return new WardrobeDTO(id, user.getId(), clothesIds, outfitIds, likedIds);
     }
 
     @Override
@@ -100,6 +112,14 @@ public class Wardrobe {
 
     public void addOutfit(Outfit outfit) {
         outfits.add(outfit);
+    }
+
+    public void addLikedClothing(Clothing clothing) {
+        liked.add(clothing);
+    }
+
+    public void removeLikedClothing(Clothing clothing) {
+        liked.remove(clothing);
     }
 
     public List<Clothing> getAllClothingByType(String type) {
