@@ -235,6 +235,9 @@ public class WardrobeController {
         Set<Outfit> outfits = new HashSet<>();
         for (String outfitId : wardrobeDTO.getOutfitsIds())
             outfits.add(outfitService.getOutfitById(outfitId));
-        return wardrobeDTO.toEntity(wardrobeDTO.getId(), user, clothings, outfits);
+        Set<Clothing> likedClothes = new HashSet<>();
+        for (String likedclothingId : wardrobeDTO.getClothesIds())
+            likedClothes.add(clothingService.getClothingById(likedclothingId));
+        return wardrobeDTO.toEntity(wardrobeDTO.getId(), user, clothings, outfits,likedClothes);
     }
 }
