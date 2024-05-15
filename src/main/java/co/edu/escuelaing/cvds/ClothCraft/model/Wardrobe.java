@@ -33,16 +33,10 @@ public class Wardrobe {
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
 
-    @ManyToMany
-    @JoinTable(name = "Wardrobe_Clothing", 
-    joinColumns = @JoinColumn(name = "wardrobe_id"), 
-    inverseJoinColumns = @JoinColumn(name = "clothing_id"))
+    @OneToMany(mappedBy = "wardrobe", cascade = CascadeType.ALL)
     private Set<Clothing> clothes;
 
-    @ManyToMany
-    @JoinTable(name = "Wardrobe_Outfit",
-    joinColumns = @JoinColumn(name = "wardrobe_id"),
-    inverseJoinColumns = @JoinColumn(name = "outfit_id"))
+    @OneToMany(mappedBy = "wardrobe", cascade = CascadeType.ALL)
     private Set<Outfit> outfits;
 
     @ManyToMany

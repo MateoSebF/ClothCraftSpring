@@ -48,8 +48,9 @@ public class Clothing {
     @Column(name = "type")
     private ClothingType type;
  
-    @ManyToMany(mappedBy = "clothes")
-    private Set<Wardrobe> wardrobes;
+    @ManyToOne
+    @JoinColumn(name = "wardrobe_id")
+    private Wardrobe wardrobe;
 
     @ManyToMany(mappedBy = "clothes")
     private List<Outfit> outfits;

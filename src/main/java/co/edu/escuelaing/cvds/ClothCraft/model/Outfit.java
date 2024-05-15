@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.*;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.OutfitDTO;
@@ -44,7 +45,9 @@ public class Outfit {
     inverseJoinColumns = @JoinColumn(name = "clothing_id"))
     private List<Clothing> clothes;
     
-    
+    @ManyToOne
+    @JoinColumn(name = "wardrobe_id")
+    private Wardrobe wardrobe;
     
 	public OutfitDTO toDTO() {
         List<String> clothesIds = clothes.stream()
