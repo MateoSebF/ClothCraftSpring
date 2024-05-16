@@ -12,6 +12,7 @@ import co.edu.escuelaing.cvds.ClothCraft.service.ClothingService;
 import co.edu.escuelaing.cvds.ClothCraft.service.OutfitService;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
+import jakarta.transaction.Transactional;
 
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
