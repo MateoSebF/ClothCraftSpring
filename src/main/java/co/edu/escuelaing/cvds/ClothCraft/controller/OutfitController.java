@@ -155,10 +155,11 @@ public class OutfitController {
      * @return Outfit, the converted outfit
      */
     private Outfit convertToObject(OutfitDTO outfitDTO) {
+        Wardrobe wardrobe =  outfitDTO.getWardrobeId() != null ? wardrobeService.getWardrobeById(outfitDTO.getWardrobeId()) : null;
         List<Clothing> clothings = new ArrayList<>();
         for (String clothingId : outfitDTO.getClothesIds())
             clothings.add(clothingService.getClothingById(clothingId));
-        Outfit outfit = outfitDTO.toEntity(clothings);
+        Outfit outfit = outfitDTO.toEntity(wardrobe, clothings);
         return outfit;
     }
 }

@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -146,10 +145,8 @@ public class ClothingController {
         if (user != null) {
             Clothing clothing = convertToObject(clothingDTO);
             clothing.setOutfits(new ArrayList<>());
-            Set<Wardrobe> wardrobes = new HashSet<>();
             Wardrobe wardrobe = wardrobeService.getWardrobeByUser(user);
-            wardrobes.add(wardrobe);
-            clothing.setWardrobes(wardrobes);
+            clothing.setWardrobe(wardrobe);
             clothing = clothingService.createClothing(clothing);
             wardrobe.addClothing(clothing);
             wardrobeService.updateWardrobe(wardrobe.getId(), wardrobe);
@@ -254,13 +251,12 @@ public class ClothingController {
      * @return Clothing, the clothing converted
      */
     private Clothing convertToObject(ClothingDTO clothingDTO) {
-        HashSet<Wardrobe> wardrobes = new HashSet<>();
-        for (String wardrobeId : clothingDTO.getWardrobeIds())
-            wardrobes.add(wardrobeService.getWardrobeById(wardrobeId));
-        ArrayList<Outfit> outfits = new ArrayList<>();
+        Wardrobe wardrobe = clothingDTO.getWardrobeId() != null ? wardrobeService.getWardrobeById(clothingDTO.getWardrobeId())
+                : null;
+        List<Outfit> outfits = new ArrayList<>();
         for (String clothing : clothingDTO.getOutfitIds())
             outfits.add(outfitService.getOutfitById(clothing));
-        Clothing clothing = clothingDTO.toEntity(wardrobes, outfits);
+        Clothing clothing = clothingDTO.toEntity(wardrobe, outfits);
         return clothing;
     }
 }
