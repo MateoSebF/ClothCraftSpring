@@ -209,20 +209,15 @@ public class ClothingController {
     }
 
 
-    @GetMapping("/randomNonLiked")
-    public ResponseEntity<ClothingDTO> getRandomNonLikedClothing(@RequestParam(name = "userId", required = true) String userId) {
+    @GetMapping("/randomNonLikedOtherUsers")
+    public ResponseEntity<ClothingDTO> getRandomNonLikedClothingFromOthers(@RequestParam(name = "userId", required = true) String userId) {
         User user = userService.getUserById(userId);
         if (user != null) {
-            Wardrobe wardrobe = user.getWardrobe();
-            if (wardrobe != null) {
-                Set<String> likedClothingIds = wardrobe.getLiked().stream().map(Clothing::getId).collect(Collectors.toSet());
-                List<Clothing> nonLikedClothing = clothingService.getAllClothingExcluding(likedClothingIds);
-                if (!nonLikedClothing.isEmpty()) {
-                    Clothing randomClothing = nonLikedClothing.get(new Random().nextInt(nonLikedClothing.size()));
-                    return new ResponseEntity<>(randomClothing.toDTO(), HttpStatus.OK);
-                } else {
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                }
+            Set<String> likedClothingIds = user.getWardrobe().getLiked().stream().map(Clothing::getId).collect(Collectors.toSet());
+            List<Clothing> nonLikedClothing = clothingService.getAllClothingExcludingUser(likedClothingIds, userId);
+            if (!nonLikedClothing.isEmpty()) {
+                Clothing randomClothing = nonLikedClothing.get(new Random().nextInt(nonLikedClothing.size()));
+                return new ResponseEntity<>(randomClothing.toDTO(), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
@@ -230,6 +225,7 @@ public class ClothingController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
 
 
 

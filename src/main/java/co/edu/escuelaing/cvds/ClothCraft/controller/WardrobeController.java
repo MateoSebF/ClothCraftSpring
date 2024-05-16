@@ -230,11 +230,18 @@ public class WardrobeController {
     private Wardrobe convertToObject(WardrobeDTO wardrobeDTO) {
         User user = wardrobeDTO.getUserId() != null ? userService.getUserById(wardrobeDTO.getUserId()) : null;
         Set<Clothing> clothings = new HashSet<>();
-        for (String clothingId : wardrobeDTO.getClothesIds())
+        for (String clothingId : wardrobeDTO.getClothesIds()) {
             clothings.add(clothingService.getClothingById(clothingId));
+        }
         Set<Outfit> outfits = new HashSet<>();
-        for (String outfitId : wardrobeDTO.getOutfitsIds())
+        for (String outfitId : wardrobeDTO.getOutfitsIds()) {
             outfits.add(outfitService.getOutfitById(outfitId));
-        return wardrobeDTO.toEntity(wardrobeDTO.getId(), user, clothings, outfits);
+        }
+        Set<Clothing> likedClothes = new HashSet<>();
+        for (String likedClothingId : wardrobeDTO.getLikedClothesIds()) {
+            likedClothes.add(clothingService.getClothingById(likedClothingId));
+        }
+        return wardrobeDTO.toEntity(wardrobeDTO.getId(), user, clothings, outfits, likedClothes);
     }
+
 }

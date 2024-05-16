@@ -29,10 +29,10 @@ public class ClothingService {
         return clothingRepository.save(clothing);
     }
 
-    public List<Clothing> getAllClothingExcluding(Set<String> excludedIds) {
-        // Use a repository method that finds all clothing where id not in excludedIds
-        return clothingRepository.findAllByIdNotIn(excludedIds);
+    public List<Clothing> getAllClothingExcludingUser(Set<String> likedClothingIds, String userId) {
+        return clothingRepository.findAllByUserIdNotAndIdNotIn(userId, likedClothingIds);
     }
+
 
 
     public Clothing updateClothing(String id, Clothing newClothing) {

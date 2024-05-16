@@ -13,5 +13,5 @@ public interface ClothingRepository extends JpaRepository<Clothing, String>{
 
     List<Clothing> findByType(ClothingType type);
 
-    List<Clothing> findAllByIdNotIn(Set<String> ids);
+    List<Clothing> findAllByUserIdNotAndIdNotIn(String userId, Set<String> excludedIds);;
 }
