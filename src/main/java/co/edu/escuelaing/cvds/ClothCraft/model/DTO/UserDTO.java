@@ -1,6 +1,5 @@
 package co.edu.escuelaing.cvds.ClothCraft.model.DTO;
 
-import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import co.edu.escuelaing.cvds.ClothCraft.model.Calendary;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
@@ -57,14 +56,4 @@ public class UserDTO{
         return calendaryId;
     }
 
-    public void escapeHtml(){
-        this.id = escapeHtml4(this.id);
-        this.name = escapeHtml4(this.name);
-        this.email = escapeHtml4(this.email);
-        this.password = escapeHtml4(this.password);
-        this.username = escapeHtml4(this.username);
-        this.photoProfile = escapeHtml4(this.photoProfile);
-        this.wardrobeId = escapeHtml4(this.wardrobeId);
-        this.calendaryId = escapeHtml4(this.calendaryId);
-    }
 }

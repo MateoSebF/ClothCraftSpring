@@ -173,7 +173,10 @@ public class UserController {
      */
     @PostMapping
     public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
-        //userDTO.escapeHtml();
+        userDTO.setName(escapeHtml4(userDTO.getName()));
+        userDTO.setEmail(escapeHtml4(userDTO.getEmail()));
+        userDTO.setPassword(escapeHtml4(userDTO.getPassword()));
+        userDTO.setUsername(escapeHtml4(userDTO.getUsername()));
         try {
             String imageUrl = "https://cdn-icons-png.flaticon.com/512/1361/1361728.png";
             URI uri = new URI(imageUrl);
@@ -256,8 +259,11 @@ public class UserController {
     @PatchMapping("/photo")
     public ResponseEntity<String> updatePhotoProfile(@RequestParam(name = "userId", required = true) String userId
     , @RequestBody UserDTO userDTO) {
+        userId = escapeHtml4(userId);
+        userDTO.setPhotoProfile(escapeHtml4(userDTO.getPhotoProfile()));
         try {
             String photo = userDTO.getPhotoProfile();
+            photo = escapeHtml4(photo);
             User user = userService.getUserById(userId);
             if (user != null) {
                 if (photo.startsWith("data:image/png;base64,")) {
@@ -285,9 +291,11 @@ public class UserController {
      */
     @GetMapping("/photo")
     public ResponseEntity<String> getPhotoProfile(@RequestParam(name = "userId", required = true) String userId) {
+        userId = escapeHtml4(userId);
         User user = userService.getUserById(userId);
         if (user != null) {
             String base64Image = user.getPhotoProfile();
+            base64Image = escapeHtml4(base64Image);
             return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(base64Image);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

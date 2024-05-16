@@ -1,5 +1,6 @@
 package co.edu.escuelaing.cvds.ClothCraft.service;
 
+import java.util.*;
 import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.ClothingType;
@@ -54,6 +55,12 @@ public class ClothingService {
     public Clothing createClothing(Clothing clothing) {
         return clothingRepository.save(clothing);
     }
+
+    public List<Clothing> getAllClothingExcludingUser(Set<String> likedClothingIds, String userId) {
+        return clothingRepository.findAllByUserIdNotAndIdNotIn(userId, likedClothingIds);
+    }
+
+
 
     public Clothing updateClothing(String id, Clothing newClothing) {
         Optional<Clothing> clothingOptional = clothingRepository.findById(id);
