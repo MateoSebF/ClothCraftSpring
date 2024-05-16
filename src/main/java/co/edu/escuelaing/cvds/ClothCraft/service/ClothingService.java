@@ -1,6 +1,7 @@
 package co.edu.escuelaing.cvds.ClothCraft.service;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
+import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.ClothingType;
 import co.edu.escuelaing.cvds.ClothCraft.repository.ClothingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +9,38 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
+
 
 @Service
 public class ClothingService {
 
     @Autowired
     private ClothingRepository clothingRepository;
+
+    @Autowired
+    private UserService userService;
+
+    public Optional<Clothing> getRandomClothingFromAnotherUser(String currentUserId) {
+        List<User> allUsers = userService.getAllUsers();
+        allUsers.removeIf(user -> user.getId().equals(currentUserId));
+
+        if (allUsers.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Random random = new Random();
+        User randomUser = allUsers.get(random.nextInt(allUsers.size()));
+        Set<Clothing> clothingSet = randomUser.getAllClothing();
+
+        if (clothingSet.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Clothing[] clothingArray = clothingSet.toArray(new Clothing[0]);
+        return Optional.of(clothingArray[random.nextInt(clothingArray.length)]);
+    }
 
     public Clothing getClothingById(String id) {
         Optional<Clothing> clothingOptional = clothingRepository.findById(id);

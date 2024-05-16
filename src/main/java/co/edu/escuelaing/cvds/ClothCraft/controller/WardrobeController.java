@@ -179,6 +179,20 @@ public class WardrobeController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @PostMapping("/{wardrobeId}/like")
+    public ResponseEntity<Void> likeClothing(@PathVariable String wardrobeId, @RequestParam String clothingId) {
+        Wardrobe wardrobe = wardrobeService.getWardrobeById(wardrobeId);
+        Clothing clothing = clothingService.getClothingById(clothingId);
+
+        if (wardrobe != null && clothing != null) {
+            wardrobe.getLiked().add(clothing);
+            wardrobeService.updateWardrobe(wardrobe.getId(), wardrobe);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PostMapping("/lowerLayers/{layer}")
     public ResponseEntity<List<String>> addLowerCloth(
             @RequestParam(name = "userId", required = true) String userId, 
@@ -235,6 +249,12 @@ public class WardrobeController {
         Set<Outfit> outfits = new HashSet<>();
         for (String outfitId : wardrobeDTO.getOutfitsIds())
             outfits.add(outfitService.getOutfitById(outfitId));
-        return wardrobeDTO.toEntity(wardrobeDTO.getId(), user, clothings, outfits);
+        Set<Clothing> liked = new HashSet<>();
+        if (wardrobeDTO.getLikedIds() != null) {
+            for (String likedId : wardrobeDTO.getLikedIds()) {
+                liked.add(clothingService.getClothingById(likedId));
+            }
+        }
+        return wardrobeDTO.toEntity(wardrobeDTO.getId(), user, clothings, outfits, liked);
     }
 }

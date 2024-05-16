@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import java.util.Optional;
+
 /*
  * Class that handles the clothing controller
  */
@@ -87,6 +89,17 @@ public class ClothingController {
                 .map(Clothing::toDTO)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(clothingDTOList, HttpStatus.OK);
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<ClothingDTO> getRandomClothingFromAnotherUser(@RequestParam String currentUserId) {
+        Optional<Clothing> randomClothing = clothingService.getRandomClothingFromAnotherUser(currentUserId);
+
+        if (randomClothing.isPresent()) {
+            return new ResponseEntity<>(randomClothing.get().toDTO(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     /*

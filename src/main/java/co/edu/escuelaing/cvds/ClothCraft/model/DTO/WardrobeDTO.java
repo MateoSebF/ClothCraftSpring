@@ -1,12 +1,14 @@
 package co.edu.escuelaing.cvds.ClothCraft.model.DTO;
 
 import java.util.Set;
+import java.util.List;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 import lombok.*;
+
 
 @Getter
 @Setter
@@ -17,6 +19,7 @@ public class WardrobeDTO {
     private String userId;
     private Set<String> clothesIds;
     private Set<String> outfitsIds;
+    private Set<String> likedIds;
 
     /*
      * Constructor used to create a Wardrobe object from a WardrobeDTO object
@@ -27,9 +30,8 @@ public class WardrobeDTO {
      * 
      * @param clothes the clothes that the wardrobe has
      */
-    public Wardrobe toEntity(String id, User user, Set<Clothing> clothings, Set<Outfit> outfits) {
-        Wardrobe wardrobe = new Wardrobe(id, user, clothings, outfits);
-        return wardrobe;
+    public Wardrobe toEntity(String id, User user, Set<Clothing> clothings, Set<Outfit> outfits, Set<Clothing> liked) {
+        return new Wardrobe(id, user, clothings, outfits, liked);
     }
 
 }
