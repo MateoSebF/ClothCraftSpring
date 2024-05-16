@@ -6,6 +6,7 @@ import java.util.List;
 import co.edu.escuelaing.cvds.ClothCraft.model.Category;
 import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
+import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 
 @Getter
 @Setter
@@ -15,10 +16,11 @@ public class OutfitDTO {
     private String id;
     private String name;
     private Category category;
+    private String wardrobeId;
     private List<String> clothesIds;
 
-    public Outfit toEntity(List<Clothing> clothes){
-        Outfit outfit = new Outfit(id, name, category, clothes);
+    public Outfit toEntity(Wardrobe wardrobe, List<Clothing> clothes){
+        Outfit outfit = new Outfit(id, name, category, wardrobe ,clothes);
         return outfit;
     }
 }

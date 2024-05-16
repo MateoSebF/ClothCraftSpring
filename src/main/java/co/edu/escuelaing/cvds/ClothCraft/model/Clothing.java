@@ -1,6 +1,5 @@
 package co.edu.escuelaing.cvds.ClothCraft.model;
 
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -48,23 +47,20 @@ public class Clothing {
     @Column(name = "type")
     private ClothingType type;
  
-    @ManyToMany(mappedBy = "clothes")
-    private Set<Wardrobe> wardrobes;
+    @ManyToOne
+    @JoinColumn(name = "wardrobe_id")
+    private Wardrobe wardrobe;
 
     @ManyToMany(mappedBy = "clothes")
     private List<Outfit> outfits;
     
     
 	public ClothingDTO toDTO() {
-        Set<String> wardrobeIds = wardrobes.stream()
-                                          .map(Wardrobe::getId)
-                                          .collect(Collectors.toSet());
-
         List<String> outfitIds = outfits.stream()
                                        .map(Outfit::getId)
                                        .collect(Collectors.toList());
 
-        return new ClothingDTO(id, name, image, color, size, type , wardrobeIds, outfitIds);
+        return new ClothingDTO(id, name, image, color, size, type , wardrobe != null ? wardrobe.getId() : null, outfitIds);
     }
     @Override
     public String toString(){
