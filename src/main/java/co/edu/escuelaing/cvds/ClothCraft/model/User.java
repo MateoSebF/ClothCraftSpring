@@ -3,6 +3,11 @@ package co.edu.escuelaing.cvds.ClothCraft.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 
@@ -63,7 +68,30 @@ public class User {
         this.username = username;
         this.password = password;
         this.username = username;
-        this.photoProfile = photoProfile;
+        try {
+            String imageUrl = "https://cdn-icons-png.flaticon.com/512/1361/1361728.png";
+            URI uri = new URI(imageUrl);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            try (InputStream inputStream = uri.toURL().openStream()) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                try {
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            byte[] imageBytes = outputStream.toByteArray();
+            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+            this.photoProfile = base64Image;
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.wardrobe = wardrobe;
         this.calendary = calendary;
     }
@@ -87,6 +115,9 @@ public class User {
     public Set<Clothing> getAllClothing() {
         return wardrobe.getClothes();
     }
+    public Set<Outfit> getAllOutfits() {
+        return wardrobe.getOutfits();
+    }
 
     public List<Clothing> getAllClothingByType(String type) {
         return wardrobe.getAllClothingByType(type);
@@ -98,6 +129,19 @@ public class User {
 
     public int getNumOutfits() {
         return wardrobe.getNumOutfits();
+    }
+
+    public Set<Clothing> getAllLikedClothing() {
+        return wardrobe.getLiked();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof User) {
+            User user = (User) obj;
+            return user.toDTO().equals(this.toDTO());
+        }
+        return false;
     }
 
 }

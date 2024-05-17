@@ -2,6 +2,9 @@ package co.edu.escuelaing.cvds.ClothCraft.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,14 +16,26 @@ import co.edu.escuelaing.cvds.ClothCraft.repository.SessionRepository;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /*
  * Class that handles the basic authentication of the users
  * with the methods preHandle, postHandle and afterCompletion
  */
+@Slf4j
 @Component
 public class BasicAuthInterceptor implements HandlerInterceptor {
+
+    private static final Set<String> EXCLUDE_URLS = new HashSet<>();
+    static {
+        EXCLUDE_URLS.add("/register");
+        EXCLUDE_URLS.add("/login");
+        EXCLUDE_URLS.add("/user/create");
+        EXCLUDE_URLS.add("/user/all");
+        // Agrega más URLs que no requieren autenticación
+    }
 
     @Autowired
     private SessionRepository sessionRepository;
@@ -41,6 +56,9 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
             sinAuthToken = cookieValue.replace("authToken=", "");
         return sinAuthToken;
     }
+    private boolean isExcludedUri(String requestURI) {
+        return EXCLUDE_URLS.contains(requestURI);
+    }
 
     /*
      * Method that handles the preHandle of the request
@@ -54,45 +72,42 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
      * @return boolean, if the request is allowed or not
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
-        String isStaticParam = request.getParameter("isStatic");
-        boolean isStatic = Boolean.parseBoolean(isStaticParam);
-        boolean isAllowed = false;
-        if (isStatic) {
-            isAllowed = true;
-        } else {
-            String authToken = getCookieValue(request, "cookie");
-            if (authToken != null) {
-                Session session = sessionRepository.findByToken(UUID.fromString(authToken));
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String requestURI = request.getRequestURI();
+        log.info("RequestURI: " + requestURI);
+        if (isExcludedUri(requestURI)) {
+            return true;
+        }
+        String authToken = getCookieValue(request, "cookie");
+        if (authToken != null) {
+            try {
+                UUID authTokenUUID = UUID.fromString(authToken);
+                Session session = sessionRepository.findByToken(authTokenUUID);
                 if (session != null) {
-                    String userId = session.getUser().getId();
-                    Duration duration = Duration.between(Instant.now(), session.getTimestamp());
+                    Duration duration = Duration.between(session.getTimestamp(), Instant.now());
                     long oneHour = 60L * 60L;
                     if (duration.getSeconds() > oneHour) {
                         sessionRepository.delete(session);
                         response.sendError(HttpServletResponse.SC_EXPECTATION_FAILED, "SessionTimeout");
-                        isAllowed = false;
+                        return false;
                     } else {
-                        String requestURI = request.getRequestURI();
-                        String queryString = request.getQueryString() != null ? request.getQueryString() : "";
-                        String userIdParam = "userId=" + userId;
-                        String newQueryString = queryString.isEmpty() ? userIdParam : queryString + "&" + userIdParam;
-                        newQueryString += "&isStatic=true";
-                        String newRequestURI = requestURI + "?" + newQueryString;
-                        request.getRequestDispatcher(newRequestURI).forward(request, response);
-                        isAllowed = false;
+                        String userId = escapeHtml4(session.getUser().getId());
+                        request.setAttribute("userId", userId);
+                        request.setAttribute("sessionValid", true);
+                        return true;
                     }
                 } else {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Bad Request");
-                    isAllowed = false;
+                    return false;
                 }
-            } else {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-                isAllowed = false;
+            } catch (IllegalArgumentException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Token Format");
+                return false;
             }
+        } else {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            return false;
         }
-        return isAllowed;
     }
 
     /*

@@ -90,7 +90,7 @@ public class OutfitController {
             Set<Wardrobe> wardrobes = new HashSet<>();
             Wardrobe wardrobe = wardrobeService.getWardrobeByUser(user);
             wardrobes.add(wardrobe);
-            //outfit.setWardrobes(wardrobes);
+            outfit.setWardrobe(wardrobe);
             outfit = outfitService.createOutfit(outfit);
             wardrobe.addOutfit(outfit);
             wardrobeService.updateWardrobe(wardrobe.getId(), wardrobe);

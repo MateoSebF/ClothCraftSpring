@@ -1,32 +1,26 @@
 package co.edu.escuelaing.cvds.ClothCraft.controller;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.Calendary;
-import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
-import co.edu.escuelaing.cvds.ClothCraft.model.DTO.ClothingDTO;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
+import co.edu.escuelaing.cvds.ClothCraft.service.SessionService;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.URI;
 import java.util.Map;
-import java.util.Base64;
+import java.util.UUID;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-
 
 /*
  * The class UserController is a controller that allows to manage the users
@@ -35,12 +29,55 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private WardrobeService wardrobeService;
-    @Autowired
-    private CalendaryService calendaryService;
+    private final UserService userService;
+
+    private final WardrobeService wardrobeService;
+
+    private final CalendaryService calendaryService;
+
+    private final SessionService sessionService;
+
+    public UserController(UserService userService, WardrobeService wardrobeService, CalendaryService calendaryService,
+            SessionService sessionService) {
+        this.userService = userService;
+        this.wardrobeService = wardrobeService;
+        this.calendaryService = calendaryService;
+        this.sessionService = sessionService;
+    }
+
+    /*
+     * Method used to create a new user assigning a new wardrobe and a calendary
+     * 
+     * @param userDTO the user to be created
+     */
+    @PostMapping("/create")
+    public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
+        userDTO.setName(escapeHtml4(userDTO.getName()));
+        userDTO.setEmail(escapeHtml4(userDTO.getEmail()));
+        userDTO.setPassword(escapeHtml4(userDTO.getPassword()));
+        userDTO.setUsername(escapeHtml4(userDTO.getUsername()));
+        try {
+            
+            User user = convertToObject(userDTO);
+            // Create a wardrobe and a calendary for the user
+            Wardrobe wardrobe = new Wardrobe(user);
+            Calendary calendary = new Calendary(user);
+            // Save the user with an initial null wardrobe and calendary
+            user = userService.createUser(user);
+            // Save the wardrobe and the calendary
+            wardrobeService.createWardrobe(wardrobe);
+            calendaryService.createCalendary(calendary);
+            // Update the user with the wardrobe and the calendary
+            user.setWardrobe(wardrobe);
+            user.setCalendary(calendary);
+            // Save the user with the wardrobe and the calendary
+            user = userService.updateUser(user.getId(), user);
+            return new ResponseEntity<>(escapeHtml4(user.toString()), HttpStatus.CREATED);
+        } catch (Exception e) {
+            String errorMessage = "An error occurred while processing the request: " + e.getMessage();
+            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     /*
      * Method used to get a user by id
@@ -107,52 +144,6 @@ public class UserController {
     }
 
     /*
-     * Method used to get the photo profile of a user by unique key
-     * 
-     * @param uniqueKey the unique key of the user
-     * 
-     * @return ResponseEntity<String>
-     */
-    @GetMapping("/photoProfile/{uniqueKey}")
-    public ResponseEntity<String> getPhotoProfileByUniqueKey(@PathVariable String uniqueKey) {
-        uniqueKey = escapeHtml4(uniqueKey);
-        ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        String photoProfile;
-        User user = null;
-        if (user == null)
-            user = userService.getUserByEmail(uniqueKey);
-        if (user == null)
-            user = userService.getUserByUserName(uniqueKey);
-        if (user != null) {
-            photoProfile = user.getPhotoProfile();
-            response = ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(photoProfile);
-        }
-        return response;
-    }
-
-    /*
-     * Method used to get the clothing of a user by unique key
-     * 
-     * @param userId the id of the user
-     * 
-     * @return ResponseEntity<List<ClothingDTO>>
-     */
-    @GetMapping("/clothings")
-    public ResponseEntity<List<ClothingDTO>> getClothingsByUniqueKey(
-            @RequestParam(name = "userId", required = true) String userId) {
-        ResponseEntity<List<ClothingDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        User user = userService.getUserById(userId);
-        if (user != null) {
-            Set<Clothing> clothingList = user.getAllClothing();
-            List<ClothingDTO> clothingDTOList = clothingList.stream()
-                    .map(Clothing::toDTO)
-                    .collect(Collectors.toList());
-            response = new ResponseEntity<List<ClothingDTO>>(clothingDTOList, HttpStatus.OK);
-        }
-        return response;
-    }
-
-    /*
      * Method used to get all the users
      * 
      * @return ResponseEntity<List<UserDTO>>
@@ -166,52 +157,6 @@ public class UserController {
         return new ResponseEntity<>(userDTOList, HttpStatus.OK);
     }
 
-    /*
-     * Method used to create a new user assigning a new wardrobe and a calendary
-     * 
-     * @param userDTO the user to be created
-     */
-    @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
-        userDTO.setName(escapeHtml4(userDTO.getName()));
-        userDTO.setEmail(escapeHtml4(userDTO.getEmail()));
-        userDTO.setPassword(escapeHtml4(userDTO.getPassword()));
-        userDTO.setUsername(escapeHtml4(userDTO.getUsername()));
-        try {
-            String imageUrl = "https://cdn-icons-png.flaticon.com/512/1361/1361728.png";
-            URI uri = new URI(imageUrl);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            try (InputStream inputStream = uri.toURL().openStream()) {
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-            }
-            byte[] imageBytes = outputStream.toByteArray();
-            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-            userDTO.setPhotoProfile(base64Image);
-            User user = convertToObject(userDTO);
-            // Create a wardrobe and a calendary for the user
-            Wardrobe wardrobe = new Wardrobe(user);
-            Calendary calendary = new Calendary(user);
-            // Save the user with an initial null wardrobe and calendary
-            user = userService.createUser(user);
-            // Save the wardrobe and the calendary
-            wardrobeService.createWardrobe(wardrobe);
-            calendaryService.createCalendary(calendary);
-            // Update the user with the wardrobe and the calendary
-            user.setWardrobe(wardrobe);
-            user.setCalendary(calendary);
-            // Save the user with the wardrobe and the calendary
-            user = userService.updateUser(user.getId(), user);
-            return new ResponseEntity<>(user.toString(), HttpStatus.CREATED);
-        } catch (Exception e) {
-            String errorMessage = "An error occurred while processing the request: " + e.getMessage();
-            return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
     /*
      * Method used to update a user
      * 
@@ -238,15 +183,20 @@ public class UserController {
      * @return ResponseEntity<Void>
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
-        boolean deleted = userService.deleteUser(id);
-        if (deleted)
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Void> deleteUser(@PathVariable String id, @CookieValue("authToken") String authToken) {
+        UUID token = UUID.fromString(authToken);
+        boolean deletedSession = sessionService.deleteSession(token);
+        if (deletedSession) {
+            boolean deleted = userService.deleteUser(id);
+            if (deleted)
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            else
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
     }
 
-    
     /*
      * Method used to update the photo profile of a user
      * 
@@ -257,8 +207,8 @@ public class UserController {
      * @return ResponseEntity<String>
      */
     @PatchMapping("/photo")
-    public ResponseEntity<String> updatePhotoProfile(@RequestParam(name = "userId", required = true) String userId
-    , @RequestBody UserDTO userDTO) {
+    public ResponseEntity<String> updatePhotoProfile(@RequestParam(name = "userId", required = true) String userId,
+            @RequestBody UserDTO userDTO) {
         userId = escapeHtml4(userId);
         userDTO.setPhotoProfile(escapeHtml4(userDTO.getPhotoProfile()));
         try {
@@ -276,29 +226,10 @@ public class UserController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            // Capturar cualquier excepción y devolver un ResponseEntity con un mensaje de error
+            // Capturar cualquier excepción y devolver un ResponseEntity con un mensaje de
+            // error
             String errorMessage = "An error occurred while updating the photo profile: " + e.getMessage();
             return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /*
-     * Method used to get the photo profile of a user
-     * 
-     * @param userId the id of the user
-     * 
-     * @return ResponseEntity<String>
-     */
-    @GetMapping("/photo")
-    public ResponseEntity<String> getPhotoProfile(@RequestParam(name = "userId", required = true) String userId) {
-        userId = escapeHtml4(userId);
-        User user = userService.getUserById(userId);
-        if (user != null) {
-            String base64Image = user.getPhotoProfile();
-            base64Image = escapeHtml4(base64Image);
-            return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body(base64Image);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
