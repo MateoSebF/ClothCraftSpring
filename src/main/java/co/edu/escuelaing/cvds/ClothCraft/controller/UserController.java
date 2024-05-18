@@ -87,7 +87,7 @@ public class UserController {
      * @return ResponseEntity<UserDTO>
      */
     @GetMapping("/id")
-    public ResponseEntity<UserDTO> getUserById(@RequestParam(name = "userId", required = true) String userId) {
+    public ResponseEntity<UserDTO> getUserById(@RequestAttribute("userId") String userId) {
         User user = userService.getUserById(userId);
         if (user != null)
             return new ResponseEntity<>(user.toDTO(), HttpStatus.OK);
@@ -104,7 +104,7 @@ public class UserController {
      */
     @GetMapping("/profile")
     public ResponseEntity<Map<String, Object>> getProfileOfAUser(
-            @RequestParam(name = "userId", required = true) String userId) {
+            @RequestAttribute("userId") String userId) {
         User user = userService.getUserById(userId);
         if (user != null) {
             String name = user.getName();
@@ -207,7 +207,7 @@ public class UserController {
      * @return ResponseEntity<String>
      */
     @PatchMapping("/photo")
-    public ResponseEntity<String> updatePhotoProfile(@RequestParam(name = "userId", required = true) String userId,
+    public ResponseEntity<String> updatePhotoProfile(@RequestAttribute("userId") String userId,
             @RequestBody UserDTO userDTO) {
         userId = escapeHtml4(userId);
         userDTO.setPhotoProfile(escapeHtml4(userDTO.getPhotoProfile()));

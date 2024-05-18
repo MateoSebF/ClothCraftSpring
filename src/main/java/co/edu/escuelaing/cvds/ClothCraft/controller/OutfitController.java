@@ -83,7 +83,7 @@ public class OutfitController {
 
     @PostMapping
     public ResponseEntity<OutfitDTO> createClothingForUser(@RequestBody OutfitDTO outfitDTO,
-            @RequestParam(name = "userId", required = true) String userId) {
+            @RequestAttribute("userId") String userId) {
         User user = userService.getUserById(userId);
         if (user != null) {
             Outfit outfit = convertToObject(outfitDTO);

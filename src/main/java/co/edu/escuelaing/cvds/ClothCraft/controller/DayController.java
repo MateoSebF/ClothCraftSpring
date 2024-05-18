@@ -51,7 +51,7 @@ public class DayController {
      */
     @GetMapping("/{date}")
     public ResponseEntity<List<ClothingDTO>> getClothingByOutfitAndDate(
-            @RequestParam(name = "userId", required = true) String userId, @PathVariable Date date) {
+            @RequestAttribute("userId") String userId, @PathVariable Date date) {
         User user = userService.getUserById(userId);
         if (user != null) {
             Day day = user.getCalendary().getDays().stream()
@@ -114,7 +114,7 @@ public class DayController {
      */
     @PostMapping("/user")
     public ResponseEntity<DayDTO> createOutfitForUserAndDay(
-            @RequestParam(name = "userId", required = true) String userId,
+            @RequestAttribute("userId") String userId,
             @RequestBody DayDTO dayDTO) {
         User user = userService.getUserById(userId);
         if (user != null) {

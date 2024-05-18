@@ -30,10 +30,14 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
 
     private static final Set<String> EXCLUDE_URLS = new HashSet<>();
     static {
-        EXCLUDE_URLS.add("/register");
         EXCLUDE_URLS.add("/login");
+        EXCLUDE_URLS.add("/login/logout");
         EXCLUDE_URLS.add("/user/create");
         EXCLUDE_URLS.add("/user/all");
+        EXCLUDE_URLS.add("/wardrobe/all");
+        EXCLUDE_URLS.add("/calendary/all");
+        EXCLUDE_URLS.add("/clothing/ClothingsTypes");
+        EXCLUDE_URLS.add("/outfit/categories");
         // Agrega más URLs que no requieren autenticación
     }
 

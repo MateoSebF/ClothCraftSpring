@@ -80,7 +80,6 @@ public class User {
                         outputStream.write(buffer, 0, bytesRead);
                     }
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
