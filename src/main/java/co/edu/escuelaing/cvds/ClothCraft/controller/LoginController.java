@@ -55,7 +55,7 @@ public class LoginController {
         ResponseEntity<?> responseEntity;
         if (user == null) {
             responseEntity = ResponseEntity.badRequest().body("User not found");
-        } else if (!passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
+        } else if (!passwordEncoder.matches(UserDTO.hashPassword(userDTO.getPassword()), user.getPassword())) {
             responseEntity = ResponseEntity.badRequest().body("Wrong password");
         } else {
             // Create a new session
