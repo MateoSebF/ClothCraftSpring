@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.Random;
+
 /*
  * Class that handles the clothing controller
  */
@@ -108,28 +109,6 @@ public class ClothingController {
     }
 
     /*
-     * Method that gets the clothing by type of a specific user
-     * 
-     * @param type, the type of the clothing to get(SHIRT, PANTS, SHOES, HAT, SCARF,
-     * ACCESSORIES, OTHER)
-     * 
-     * @return ResponseEntity<List<ClothingDTO>>, the list of clothing with the type
-     */
-    @GetMapping("/byType/{type}")
-    public ResponseEntity<List<ClothingDTO>> getClothingByType(@PathVariable String type,
-            @RequestParam(name = "userId", required = true) String userId) {
-        User user = userService.getUserById(userId);
-        if (user != null) {
-            List<Clothing> clothingList = user.getAllClothingByType(type);
-            List<ClothingDTO> clothingDTOList = clothingList.stream()
-                    .map(Clothing::toDTO)
-                    .collect(Collectors.toList());
-            return new ResponseEntity<>(clothingDTOList, HttpStatus.OK);
-        } else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    /*
      * Method that creates a clothing for a specific user
      * 
      * @param clothingDTO, the clothing to create
@@ -140,7 +119,7 @@ public class ClothingController {
      */
     @PostMapping("")
     public ResponseEntity<ClothingDTO> createClothingForUser(@RequestBody ClothingDTO clothingDTO,
-            @RequestParam(name = "userId", required = true) String userId) {
+            @RequestAttribute("userId") String userId) {
         User user = userService.getUserById(userId);
         if (user != null) {
             Clothing clothing = convertToObject(clothingDTO);
@@ -185,23 +164,22 @@ public class ClothingController {
      */
     @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClothing(@PathVariable String id, @RequestParam(name = "userId", required = true) String userId) {
+    public ResponseEntity<Void> deleteClothing(@PathVariable String id, @RequestAttribute("userId") String userId) {
         User user = userService.getUserById(userId);
         if (user == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         Clothing clothing = clothingService.getClothingById(id);
         if (clothing == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        if (clothing.getWardrobe() ==  user.getWardrobe()){
+        if (clothing.getWardrobe() == user.getWardrobe()) {
             boolean deleted = clothingService.deleteClothing(id);
             if (deleted)
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             else
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        else
+        } else
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        
+
     }
 
     /*
@@ -218,15 +196,40 @@ public class ClothingController {
         return new ResponseEntity<>(clothingTypes, HttpStatus.OK);
     }
 
+    /*
+     * Method that gets the clothing by type of a specific user
+     * 
+     * @param type, the type of the clothing to get(SHIRT, PANTS, SHOES, HAT, SCARF,
+     * ACCESSORIES, OTHER)
+     * 
+     * @return ResponseEntity<List<ClothingDTO>>, the list of clothing with the type
+     */
+    @GetMapping("/byType/{type}")
+    public ResponseEntity<List<ClothingDTO>> getClothingByType(@PathVariable String type,
+            @RequestAttribute("userId") String userId) {
+        User user = userService.getUserById(userId);
+        if (user != null) {
+            List<Clothing> clothingList = user.getAllClothingByType(type);
+            List<ClothingDTO> clothingDTOList = clothingList.stream()
+                    .map(Clothing::toDTO)
+                    .collect(Collectors.toList());
+            return new ResponseEntity<>(clothingDTOList, HttpStatus.OK);
+        } else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
-    @GetMapping("/randomNonLiked")
-    public ResponseEntity<ClothingDTO> getRandomNonLikedClothing(@RequestParam(name = "userId", required = true) String userId) {
+    @GetMapping("/randomNonLiked/byType/{type}")
+    public ResponseEntity<ClothingDTO> getRandomNonLikedClothing(@RequestAttribute("userId") String userId,
+            @RequestParam String type) {
         User user = userService.getUserById(userId);
         if (user != null) {
             Wardrobe wardrobe = user.getWardrobe();
             if (wardrobe != null) {
-                Set<String> likedClothingIds = wardrobe.getLiked().stream().map(Clothing::getId).collect(Collectors.toSet());
+                Set<String> likedClothingIds = wardrobe.getLiked().stream().map(Clothing::getId)
+                        .collect(Collectors.toSet());
                 List<Clothing> nonLikedClothing = clothingService.getAllClothingExcluding(likedClothingIds);
+                nonLikedClothing = nonLikedClothing.stream()
+                        .filter(clothing -> clothing.getType().toString().equals(type)).collect(Collectors.toList());
                 if (!nonLikedClothing.isEmpty()) {
                     Clothing randomClothing = nonLikedClothing.get(new Random().nextInt(nonLikedClothing.size()));
                     return new ResponseEntity<>(randomClothing.toDTO(), HttpStatus.OK);
@@ -241,8 +244,6 @@ public class ClothingController {
         }
     }
 
-
-
     /*
      * Method that converts a clothingDTO to a clothing
      * 
@@ -251,7 +252,8 @@ public class ClothingController {
      * @return Clothing, the clothing converted
      */
     private Clothing convertToObject(ClothingDTO clothingDTO) {
-        Wardrobe wardrobe = clothingDTO.getWardrobeId() != null ? wardrobeService.getWardrobeById(clothingDTO.getWardrobeId())
+        Wardrobe wardrobe = clothingDTO.getWardrobeId() != null
+                ? wardrobeService.getWardrobeById(clothingDTO.getWardrobeId())
                 : null;
         List<Outfit> outfits = new ArrayList<>();
         for (String clothing : clothingDTO.getOutfitIds())

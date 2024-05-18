@@ -174,4 +174,5 @@ public class Wardrobe {
     public void removeLayer(ClothingType valueOf) {
         layers.remove(valueOf);
     }
+
 }

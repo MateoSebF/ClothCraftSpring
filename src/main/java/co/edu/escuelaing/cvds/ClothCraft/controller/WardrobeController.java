@@ -5,6 +5,8 @@ import co.edu.escuelaing.cvds.ClothCraft.model.ClothingType;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.ClothingDTO;
+import co.edu.escuelaing.cvds.ClothCraft.model.DTO.OutfitDTO;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.WardrobeDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.ClothingService;
 import co.edu.escuelaing.cvds.ClothCraft.service.OutfitService;
@@ -76,7 +78,7 @@ public class WardrobeController {
      */
     @GetMapping("/layersTypes")
     public ResponseEntity<List<String>> getLayers(
-            @RequestParam(name = "userId", required = true) String userId) {
+            @RequestAttribute("userId") String userId) {
         User user = userService.getUserById(userId);
         Wardrobe wardrobe = user.getWardrobe();
         if (wardrobe != null)
@@ -140,7 +142,7 @@ public class WardrobeController {
 
     @GetMapping("/upperLayers/{layer}")
     public ResponseEntity<List<String>> getUpperCloth(
-            @RequestParam(name = "userId", required = true) String userId, 
+            @RequestAttribute("userId") String userId, 
             @PathVariable String layer) {
         User user = userService.getUserById(userId);
         Wardrobe wardrobe = user.getWardrobe();
@@ -153,7 +155,7 @@ public class WardrobeController {
 
     @GetMapping("/lowerLayers/{layer}")
     public ResponseEntity<List<String>> getLowerCloth(
-            @RequestParam(name = "userId", required = true) String userId, 
+            @RequestAttribute("userId") String userId, 
             @PathVariable String layer) {
         User user = userService.getUserById(userId);
         Wardrobe wardrobe = user.getWardrobe();
@@ -166,7 +168,7 @@ public class WardrobeController {
 
     @PostMapping("/upperLayers/{layer}")
     public ResponseEntity<List<String>> addUpperCloth(
-            @RequestParam(name = "userId", required = true) String userId, 
+            @RequestAttribute("userId") String userId, 
             @PathVariable String layer) {
         User user = userService.getUserById(userId);
         Wardrobe wardrobe = user.getWardrobe();
@@ -181,7 +183,7 @@ public class WardrobeController {
 
     @PostMapping("/lowerLayers/{layer}")
     public ResponseEntity<List<String>> addLowerCloth(
-            @RequestParam(name = "userId", required = true) String userId, 
+            @RequestAttribute("userId") String userId, 
             @PathVariable String layer) {
         User user = userService.getUserById(userId);
         Wardrobe wardrobe = user.getWardrobe();
@@ -196,7 +198,7 @@ public class WardrobeController {
 
     @DeleteMapping("/layers/{layer}")
     public ResponseEntity<List<String>> deleteUpperCloth(
-            @RequestParam(name = "userId", required = true) String userId, 
+            @RequestAttribute("userId") String userId, 
             @PathVariable String layer) {
         User user = userService.getUserById(userId);
         Wardrobe wardrobe = user.getWardrobe();
@@ -218,6 +220,58 @@ public class WardrobeController {
     public Wardrobe getWardrobeEntityById(String id) {
         Wardrobe wardrobe = wardrobeService.getWardrobeById(id);
         return wardrobe;
+    }
+
+    /*
+     * Method used to get the clothing of a user by unique key
+     * 
+     * @param userId the id of the user
+     * 
+     * @return ResponseEntity<List<ClothingDTO>>
+     */
+    @GetMapping("/clothings")
+    public ResponseEntity<List<ClothingDTO>> getClothingsByUniqueKey(
+            @RequestAttribute("userId") String userId) {
+        ResponseEntity<List<ClothingDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        User user = userService.getUserById(userId);
+        if (user != null) {
+            Set<Clothing> clothingList = user.getAllClothing();
+            List<ClothingDTO> clothingDTOList = clothingList.stream()
+                    .map(Clothing::toDTO)
+                    .collect(Collectors.toList());
+            response = new ResponseEntity<List<ClothingDTO>>(clothingDTOList, HttpStatus.OK);
+        }
+        return response;
+    }
+    
+    @GetMapping("/outfits")
+    public ResponseEntity<List<OutfitDTO>> getOutfitsByUniqueKey(
+            @RequestAttribute("userId") String userId) {
+        ResponseEntity<List<OutfitDTO> > response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        User user = userService.getUserById(userId);
+        if (user != null) {
+            Set<Outfit> outfitsList = user.getAllOutfits();
+            List<OutfitDTO> outfitDTOList = outfitsList.stream()
+                    .map(Outfit::toDTO)
+                    .collect(Collectors.toList());
+            response = new ResponseEntity<List<OutfitDTO>>(outfitDTOList, HttpStatus.OK);
+        }
+        return response;
+    }
+
+    @GetMapping("/likedClothes")
+    public ResponseEntity<List<ClothingDTO>> getLikedClothesByUniqueKey(
+            @RequestAttribute("userId") String userId) {
+        ResponseEntity<List<ClothingDTO>> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        User user = userService.getUserById(userId);
+        if (user != null) {
+            Set<Clothing> clothingList = user.getAllLikedClothing();
+            List<ClothingDTO> clothingDTOList = clothingList.stream()
+                    .map(Clothing::toDTO)
+                    .collect(Collectors.toList());
+            response = new ResponseEntity<List<ClothingDTO>>(clothingDTOList, HttpStatus.OK);
+        }
+        return response;
     }
 
     /*

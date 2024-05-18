@@ -15,4 +15,14 @@ public class SessionService {
     public Session getSessionByToken(UUID token) {
         return sessionRepository.findByToken(token);
     }
+
+    public boolean deleteSession(UUID token) {
+        Session session = sessionRepository.findByToken(token);
+        if (session != null) {
+            sessionRepository.delete(session);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
