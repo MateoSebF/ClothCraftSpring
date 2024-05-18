@@ -6,8 +6,6 @@ import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 import co.edu.escuelaing.cvds.ClothCraft.repository.SessionRepository;
 import co.edu.escuelaing.cvds.ClothCraft.repository.UserRepository;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
@@ -47,15 +45,15 @@ public class LoginController {
      * 
      * @return ResponseEntity, the response to be sent to the server
      */
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("")
     public ResponseEntity<?> loginSubmit(@RequestBody UserDTO userDTO, HttpServletResponse response) {
         User user = userRepository.findByEmail(userDTO.getEmail()).orElse(null);
         ResponseEntity<?> responseEntity;
+        String hashedPassword = UserDTO.hashPassword(userDTO.getPassword()) ;
         if (user == null) {
             responseEntity = ResponseEntity.badRequest().body("User not found");
-        } else if (!passwordEncoder.matches(UserDTO.hashPassword(userDTO.getPassword()), user.getPassword())) {
+        } else if (!hashedPassword.equals(user.getPassword())) {
             responseEntity = ResponseEntity.badRequest().body("Wrong password");
         } else {
             // Create a new session
