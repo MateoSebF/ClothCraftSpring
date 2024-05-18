@@ -1,7 +1,6 @@
 package co.edu.escuelaing.cvds.ClothCraft.service;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.Day;
-import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
 import co.edu.escuelaing.cvds.ClothCraft.repository.DayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

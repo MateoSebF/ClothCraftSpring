@@ -83,10 +83,12 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
             return true;
         }
         String authToken = getCookieValue(request, "cookie");
+        System.out.println("authToken: " + authToken);
         if (authToken != null) {
             try {
                 UUID authTokenUUID = UUID.fromString(authToken);
                 Session session = sessionRepository.findByToken(authTokenUUID);
+                
                 if (session != null) {
                     Duration duration = Duration.between(session.getTimestamp(), Instant.now());
                     long oneHour = 60L * 60L;
