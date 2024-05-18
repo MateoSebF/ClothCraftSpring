@@ -6,8 +6,17 @@ import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 import lombok.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.nio.charset.StandardCharsets;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Getter
 @Setter
@@ -27,6 +36,30 @@ public class UserDTO {
     public User toEntity(Wardrobe wardrobe, Calendary calendary) {
         String hashedPassword = hashPassword(password);
 
+        try {
+            String imageUrl = "https://cdn-icons-png.flaticon.com/512/1361/1361728.png";
+            URI uri = new URI(imageUrl);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            try (InputStream inputStream = uri.toURL().openStream()) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                try {
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            byte[] imageBytes = outputStream.toByteArray();
+            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+            this.photoProfile = base64Image;
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
         User user = new User(id, name, email, hashedPassword, username, photoProfile, wardrobe, calendary);
 
         return user;
@@ -54,7 +87,7 @@ public class UserDTO {
     public String getCalendaryId() {
         return calendaryId;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof UserDTO) {
@@ -62,7 +95,7 @@ public class UserDTO {
             return (this.id == null ||user.getId() == null) ? this.id == null : user.getId().equals(this.id)
                 && (this.name == null ||user.getName() == null) ? this.name == null : user.getName().equals(this.name)
                 && (this.email == null ||user.getEmail() == null) ? this.email == null : user.getEmail().equals(this.email)
-                && (this.password == null ||user.getPassword() == null) ? this.password == null : user.getPassword().equals(this.password)
+                && (this.password == null ||user.getPassword() == null) ? this.password == null : new BCryptPasswordEncoder().matches(this.password, user.getPassword())
                 && (this.username == null ||user.getUsername() == null) ? this.username == null : user.getUsername().equals(this.username)
                 && (this.photoProfile == null ||user.getPhotoProfile() == null) ? this.photoProfile == null : user.getPhotoProfile().equals(this.photoProfile)
                 && (this.wardrobeId == null ||user.getWardrobeId() == null) ? this.wardrobeId == null : user.getWardrobeId().equals(this.wardrobeId)
