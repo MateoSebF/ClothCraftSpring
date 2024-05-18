@@ -3,6 +3,7 @@ package co.edu.escuelaing.cvds.ClothCraft.model;
 import java.util.stream.Collectors;
 
 import org.hibernate.annotations.GenericGenerator;
+import java.util.Set;
 
 import java.util.List;
 import jakarta.persistence.*;
@@ -53,14 +54,19 @@ public class Clothing {
 
     @ManyToMany(mappedBy = "clothes")
     private List<Outfit> outfits;
+
+    @ManyToMany(mappedBy = "liked")
+    private Set<Wardrobe> likedBy;
     
     
 	public ClothingDTO toDTO() {
         List<String> outfitIds = outfits.stream()
                                        .map(Outfit::getId)
                                        .collect(Collectors.toList());
-
-        return new ClothingDTO(id, name, image, color, size, type , wardrobe != null ? wardrobe.getId() : null, outfitIds);
+        Set<String> wardrobeIds = likedBy.stream()
+                                       .map(Wardrobe::getId)
+                                       .collect(Collectors.toSet());
+        return new ClothingDTO(id, name, image, color, size, type , wardrobe != null ? wardrobe.getId() : null, outfitIds,wardrobeIds);
     }
     @Override
     public String toString(){

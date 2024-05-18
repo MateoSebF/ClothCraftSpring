@@ -50,7 +50,7 @@ public class LoginController {
     public ResponseEntity<?> loginSubmit(@RequestBody UserDTO userDTO, HttpServletResponse response) {
         User user = userRepository.findByEmail(userDTO.getEmail()).orElse(null);
         ResponseEntity<?> responseEntity;
-        String hashedPassword = UserDTO.hashPassword(userDTO.getPassword()) ;
+        String hashedPassword = UserDTO.hashPassword(userDTO.getPassword());
         if (user == null) {
             responseEntity = ResponseEntity.badRequest().body("User not found");
         } else if (!hashedPassword.equals(user.getPassword())) {

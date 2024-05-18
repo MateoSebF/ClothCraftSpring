@@ -4,6 +4,8 @@ import lombok.*;
 
 import java.util.List;
 
+import java.util.Set;
+
 import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.ClothingType;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
@@ -23,9 +25,10 @@ public class ClothingDTO {
     private ClothingType type;
     private String wardrobeId;
     private List<String> outfitIds;
+    private Set<String> likedBy;
     
-    public Clothing toEntity(Wardrobe wardrobe, List<Outfit> outfits){
-        Clothing clothing = new Clothing(id,name,image,color,size,type,wardrobe,outfits);
+    public Clothing toEntity(Wardrobe wardrobe, List<Outfit> outfits, Set<Wardrobe> likedBy){
+        Clothing clothing = new Clothing(id,name,image,color,size,type,wardrobe,outfits,likedBy);
         return clothing;
     }
 }

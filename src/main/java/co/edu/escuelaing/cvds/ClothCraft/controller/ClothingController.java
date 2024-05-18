@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -177,9 +178,16 @@ public class ClothingController {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             else
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-
+        } else{
+            boolean isLiked = user.getWardrobe().getLiked().contains(clothing);
+            if (isLiked){
+                user.getWardrobe().getLiked().remove(clothing);
+                userService.updateUser(user.getId(), user);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }else{
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        }
     }
 
     /*
@@ -220,21 +228,28 @@ public class ClothingController {
 
     @GetMapping("/randomNonLiked/byType/{type}")
     public ResponseEntity<ClothingDTO> getRandomNonLikedClothing(@RequestAttribute("userId") String userId,
-            @RequestParam String type) {
+            @PathVariable String type) {
+        System.out.println("Getting random non liked clothing of type " + type);
         User user = userService.getUserById(userId);
         if (user != null) {
             Wardrobe wardrobe = user.getWardrobe();
             if (wardrobe != null) {
+                Set<String> MyClothingIds = wardrobe.getClothes().stream().map(Clothing::getId)
+                        .collect(Collectors.toSet());
                 Set<String> likedClothingIds = wardrobe.getLiked().stream().map(Clothing::getId)
                         .collect(Collectors.toSet());
-                List<Clothing> nonLikedClothing = clothingService.getAllClothingExcluding(likedClothingIds);
+                List<Clothing> nonLikedClothing = clothingService.getAllClothing();
+                nonLikedClothing = nonLikedClothing.stream().filter(clothing -> !likedClothingIds.contains(clothing.getId()))
+                        .collect(Collectors.toList());
+                nonLikedClothing = nonLikedClothing.stream().filter(clothing -> !MyClothingIds.contains(clothing.getId()))
+                        .collect(Collectors.toList());
                 nonLikedClothing = nonLikedClothing.stream()
                         .filter(clothing -> clothing.getType().toString().equals(type)).collect(Collectors.toList());
                 if (!nonLikedClothing.isEmpty()) {
                     Clothing randomClothing = nonLikedClothing.get(new Random().nextInt(nonLikedClothing.size()));
                     return new ResponseEntity<>(randomClothing.toDTO(), HttpStatus.OK);
                 } else {
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
                 }
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -243,7 +258,28 @@ public class ClothingController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @PostMapping("/likeClothing")
+    public ResponseEntity<String> likeClothing(@RequestBody ClothingDTO clothingDTO, @RequestAttribute("userId") String userId) {
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
 
+        Wardrobe wardrobe = wardrobeService.getWardrobeByUser(user);
+        if (wardrobe == null) {
+            return new ResponseEntity<>("Wardrobe not found", HttpStatus.NOT_FOUND);
+        }
+
+        Clothing clothing = convertToObject(clothingDTO);
+        // Check if the clothing is already liked to prevent duplicates
+        if (!wardrobe.getLiked().contains(clothing)) {
+            wardrobe.getLiked().add(clothing);
+            wardrobeService.updateWardrobe(wardrobe.getId(), wardrobe);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
     /*
      * Method that converts a clothingDTO to a clothing
      * 
@@ -258,7 +294,10 @@ public class ClothingController {
         List<Outfit> outfits = new ArrayList<>();
         for (String clothing : clothingDTO.getOutfitIds())
             outfits.add(outfitService.getOutfitById(clothing));
-        Clothing clothing = clothingDTO.toEntity(wardrobe, outfits);
+        Set<Wardrobe> likedBy = new HashSet<>();
+        for (String wardrobeId : clothingDTO.getLikedBy())
+            likedBy.add(wardrobeService.getWardrobeById(wardrobeId));
+        Clothing clothing = clothingDTO.toEntity(wardrobe, outfits,likedBy);
         return clothing;
     }
 }

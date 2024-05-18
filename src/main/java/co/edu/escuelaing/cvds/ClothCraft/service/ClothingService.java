@@ -1,6 +1,5 @@
 package co.edu.escuelaing.cvds.ClothCraft.service;
 
-import java.util.*;
 import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.ClothingType;
 import co.edu.escuelaing.cvds.ClothCraft.repository.ClothingRepository;
@@ -27,11 +26,6 @@ public class ClothingService {
 
     public Clothing createClothing(Clothing clothing) {
         return clothingRepository.save(clothing);
-    }
-
-    public List<Clothing> getAllClothingExcluding(Set<String> excludedIds) {
-        // Use a repository method that finds all clothing where id not in excludedIds
-        return clothingRepository.findAllByIdNotIn(excludedIds);
     }
 
 
