@@ -47,24 +47,26 @@ public class UserControllerTest {
         calendaryService = mock(CalendaryService.class);
         sessionService = mock(SessionService.class);
         userController = new UserController(userService, wardrobeService, calendaryService, sessionService);
+
+        // Datos ficticios
         userDTO = new UserDTO();
-        userDTO.setId("12345");
+        userDTO.setId("fake-id-12345");
         userDTO.setName("John Doe");
         userDTO.setEmail("johndoe@example.com");
-        userDTO.setPassword("password");
-        userDTO.setUsername("johndoe");
+        userDTO.setPassword("dummyPassword");  // Usar un valor ficticio no relacionado con credenciales reales
+        userDTO.setUsername("exampleUsername");
 
         user = new User();
-        user.setId("12345");
+        user.setId("fake-id-12345");
         user.setName("John Doe");
         user.setEmail("johndoe@example.com");
-        user.setPassword(UserDTO.hashPassword("password"));
-        user.setUsername("johndoe");
+        user.setPassword(UserDTO.hashPassword("dummyPassword"));  // Usar el mismo valor ficticio
+        user.setUsername("exampleUsername");
 
         wardrobe = new Wardrobe(user);
-        wardrobe.setId("12345");
+        wardrobe.setId("fake-wardrobe-id-12345");
         calendary = new Calendary(user);
-        calendary.setId("12345");
+        calendary.setId("fake-calendary-id-12345");
     }
 
     @Test
@@ -85,22 +87,22 @@ public class UserControllerTest {
         User capturedUser = userCaptor.getValue();
 
         // Verificar los valores del usuario capturado
-        assertEquals("12345", capturedUser.getId());
+        assertEquals("fake-id-12345", capturedUser.getId());
         assertEquals("John Doe", capturedUser.getName());
         assertEquals("johndoe@example.com", capturedUser.getEmail());
-        assertEquals(UserDTO.hashPassword("password"), capturedUser.getPassword());
-        assertEquals("johndoe", capturedUser.getUsername());
+        assertEquals(UserDTO.hashPassword("dummyPassword"), capturedUser.getPassword());
+        assertEquals("exampleUsername", capturedUser.getUsername());
 
         // Verificar llamadas en orden
         InOrder inOrder = inOrder(userService, wardrobeService, calendaryService);
         inOrder.verify(userService).createUser(any(User.class));
         inOrder.verify(wardrobeService).createWardrobe(any(Wardrobe.class));
         inOrder.verify(calendaryService).createCalendary(any(Calendary.class));
-        inOrder.verify(userService).updateUser(eq("12345"), any(User.class));
+        inOrder.verify(userService).updateUser(eq("fake-id-12345"), any(User.class));
 
         // Verificar todas las llamadas
         verify(userService, times(1)).createUser(any(User.class));
-        verify(userService, times(1)).updateUser(eq("12345"), any(User.class));
+        verify(userService, times(1)).updateUser(eq("fake-id-12345"), any(User.class));
         verify(wardrobeService, times(1)).createWardrobe(any(Wardrobe.class));
         verify(calendaryService, times(1)).createCalendary(any(Calendary.class));
     }
@@ -134,7 +136,7 @@ public class UserControllerTest {
 
         Map<String, Object> expectedUserData = new HashMap<>();
         expectedUserData.put("name", "John Doe");
-        expectedUserData.put("username", "johndoe");
+        expectedUserData.put("username", "exampleUsername");
         expectedUserData.put("profileImage", null);
         expectedUserData.put("numItems", 0);
         expectedUserData.put("numOutfits", 0);
@@ -204,7 +206,7 @@ public class UserControllerTest {
         user1.setName("John Doe Modified");
         user1.setEmail("johndoeModified@example.com");
         user1.setPassword(UserDTO.hashPassword("password"));
-        user1.setUsername("johndoeModified");
+        user1.setUsername("exampleUsernameModified");
         
         when(userService.updateUser(anyString(), any(User.class))).thenReturn(user1);
         System.out.println(user1.getPhotoProfile());
