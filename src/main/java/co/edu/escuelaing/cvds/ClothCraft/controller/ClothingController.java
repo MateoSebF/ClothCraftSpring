@@ -243,7 +243,32 @@ public class ClothingController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @PostMapping("/likeClothing")
+    public ResponseEntity<String> likeClothing(@RequestParam String clothingId, @RequestAttribute("userId") String userId) {
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
 
+        Clothing clothing = clothingService.getClothingById(clothingId);
+        if (clothing == null) {
+            return new ResponseEntity<>("Clothing not found", HttpStatus.NOT_FOUND);
+        }
+
+        Wardrobe wardrobe = wardrobeService.getWardrobeByUser(user);
+        if (wardrobe == null) {
+            return new ResponseEntity<>("Wardrobe not found", HttpStatus.NOT_FOUND);
+        }
+
+        // Check if the clothing is already liked to prevent duplicates
+        if (!wardrobe.getLiked().contains(clothing)) {
+            wardrobe.getLiked().add(clothing);
+            wardrobeService.updateWardrobe(wardrobe.getId(), wardrobe);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
     /*
      * Method that converts a clothingDTO to a clothing
      * 

@@ -33,7 +33,7 @@ public class CorsConfig implements WebMvcConfigurer {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(
-                Arrays.asList("http://localhost:3000", "https://mango-cliff-06b900910.5.azurestaticapps.net"));
+                Arrays.asList("http://localhost:3000", "https://mango-cliff-06b900910.5.azurestaticapps.net","http://localhost:8080"));
         config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         source.registerCorsConfiguration("/**", config);
