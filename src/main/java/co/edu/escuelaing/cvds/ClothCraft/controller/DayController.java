@@ -95,8 +95,10 @@ public class DayController {
      * @return ResponseEntity<List<DayDTO>>, the list of all the days
      */
     @GetMapping("/all")
-    public ResponseEntity<List<DayDTO>> getAllDays() {
-        List<Day> days = dayService.getAllDays();
+    public ResponseEntity<List<DayDTO>> getAllDays(@RequestAttribute("userId") String userId) {
+        User user = userService.getUserById(userId);
+        Calendary calendary = user.getCalendary();
+        List<Day> days = calendary.getDays();
         List<DayDTO> dayDTOs = days.stream()
                 .map(Day::toDTO)
                 .collect(Collectors.toList());
