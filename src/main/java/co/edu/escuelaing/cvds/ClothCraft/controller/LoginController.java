@@ -49,6 +49,9 @@ public class LoginController {
     @PostMapping("")
     public ResponseEntity<?> loginSubmit(@RequestBody UserDTO userDTO, HttpServletResponse response) {
         User user = userRepository.findByEmail(userDTO.getEmail()).orElse(null);
+        if (user == null) {
+            user = userRepository.findByUsername('@'+userDTO.getUsername()).orElse(null);
+        }
         ResponseEntity<?> responseEntity;
         String hashedPassword = UserDTO.hashPassword(userDTO.getPassword());
         if (user == null) {
