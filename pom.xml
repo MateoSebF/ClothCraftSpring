@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
-			<version>1.11.0</version> <!-- or the version you prefer -->
+			<version>1.12.0</version> <!-- or the version you prefer -->
 		</dependency>
 
 		<dependency>
