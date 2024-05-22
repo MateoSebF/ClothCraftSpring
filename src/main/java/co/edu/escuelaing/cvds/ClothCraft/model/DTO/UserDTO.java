@@ -30,6 +30,7 @@ public class UserDTO {
     private String photoProfile;
     private String wardrobeId;
     private String calendaryId;
+    public boolean isVerified;
 
     public User toEntity(Wardrobe wardrobe, Calendary calendary) {
         String hashedPassword = hashPassword(password);
@@ -58,7 +59,7 @@ public class UserDTO {
             e.printStackTrace();
         }
         
-        User user = new User(id, name, email, hashedPassword, username, photoProfile, wardrobe, calendary);
+        User user = new User(id, name, email, hashedPassword, username, photoProfile, wardrobe, calendary, isVerified);
 
         return user;
     }

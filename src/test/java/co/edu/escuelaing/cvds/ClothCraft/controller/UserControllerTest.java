@@ -7,6 +7,7 @@ import co.edu.escuelaing.cvds.ClothCraft.model.Calendary;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
+import co.edu.escuelaing.cvds.ClothCraft.service.EmailService;
 import co.edu.escuelaing.cvds.ClothCraft.service.SessionService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,7 @@ public class UserControllerTest {
     private WardrobeService wardrobeService;
     private CalendaryService calendaryService;
     private SessionService sessionService;
+    private EmailService emailService;
     private UserController userController;
 
     private UserDTO userDTO;
@@ -46,7 +48,8 @@ public class UserControllerTest {
         wardrobeService = mock(WardrobeService.class);
         calendaryService = mock(CalendaryService.class);
         sessionService = mock(SessionService.class);
-        userController = new UserController(userService, wardrobeService, calendaryService, sessionService);
+        emailService = mock(EmailService.class);
+        userController = new UserController(userService, wardrobeService, calendaryService, sessionService, emailService);
 
         // Datos ficticios
         userDTO = new UserDTO();
