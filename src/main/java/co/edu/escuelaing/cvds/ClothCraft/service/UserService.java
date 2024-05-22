@@ -2,7 +2,9 @@ package co.edu.escuelaing.cvds.ClothCraft.service;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,8 +24,29 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        return userRepository.save(user);
+        try {
+            return userRepository.save(user);
+        } catch (DataIntegrityViolationException ex) {
+            handleDataIntegrityViolationException(ex);
+            return null; // This return will never execute because exceptions are thrown within handleDataIntegrityViolationException
+        } catch (Exception ex) {
+            throw ex;
+        }
     }
+    
+    private void handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        String message = ex.getMessage();
+        if (message != null) {
+            if (message.contains("user.UK_ob8kqyqqgmefl0aco34akdtpe")) {
+                throw new RuntimeException("The 'email' field already exists. Please choose another email.", ex);
+            } else if (message.contains("user.UK_sb8bbouer5wak8vyiiy4pf2bx")) {
+                throw new RuntimeException("The 'username' field already exists. Please choose another username.", ex);
+            }
+        }
+        throw ex; // Re-throw the original exception if no specific message is identified
+    }
+    
+    
 
     public User updateUser(String id, User user) {
         User existingUser = userRepository.findById(id).orElse(null);

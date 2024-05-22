@@ -7,6 +7,7 @@ import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
+import jakarta.servlet.http.HttpServletResponse;
 import co.edu.escuelaing.cvds.ClothCraft.service.SessionService;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.UUID;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,7 +60,7 @@ public class UserController {
         userDTO.setPassword(escapeHtml4(userDTO.getPassword()));
         userDTO.setUsername(escapeHtml4(userDTO.getUsername()));
         try {
-            
+
             User user = convertToObject(userDTO);
             // Create a wardrobe and a calendary for the user
             Wardrobe wardrobe = new Wardrobe(user);
@@ -77,6 +80,19 @@ public class UserController {
             String errorMessage = "An error occurred while processing the request: " + e.getMessage();
             return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/verify")
+    public void verifyAccount(HttpServletResponse response, @RequestParam String token) throws IOException {
+        User user = userService.getUserById(token);
+
+        if (user == null) {
+            return;
+        }
+
+        user.setVerified(true);
+        userService.updateUser(token, user);
+        response.sendRedirect("https://mango-cliff-06b900910.5.azurestaticapps.net//login");
     }
 
     /*

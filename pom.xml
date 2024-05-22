@@ -17,8 +17,13 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
-	
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.6.2</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
+		
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
