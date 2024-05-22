@@ -19,6 +19,7 @@ public class OutfitService {
         return outfitOptional.orElse(null);
     }
 
+
     public List<Outfit> getAllOutfits() {
         return outfitRepository.findAll();
     }
@@ -48,5 +49,9 @@ public class OutfitService {
         } else {
             return false;
         }
+    }
+
+    public String[] getClothingNameByOutfitId(String id) {
+        return outfitRepository.getClothingNameByOutfitId(id);
     }
 }

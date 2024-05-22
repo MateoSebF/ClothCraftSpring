@@ -8,6 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import co.edu.escuelaing.cvds.ClothCraft.model.Day;
@@ -19,6 +20,7 @@ import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootApplication
+@EnableScheduling
 @Slf4j
 public class ClothCraftApplication {
 	
@@ -41,7 +43,7 @@ public class ClothCraftApplication {
 		};
 	}
 
-	@Scheduled(cron = "0 20 12 * * ?") // Programa la tarea para que se ejecute a las 12 PM todos los días
+	@Scheduled(cron = "0 41 15 * * ?") // Programa la tarea para que se ejecute a las 12 PM todos los días
     public void sendDailyNotifications() {
         try {
             // Obtén todas las notificaciones pendientes
