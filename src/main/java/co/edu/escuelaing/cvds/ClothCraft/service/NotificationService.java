@@ -23,5 +23,7 @@ public class NotificationService {
         notificationRepository.delete(notification);
     }
 
-
+    public void saveNotification(Notification notification) {
+        notificationRepository.save(notification);
+    }
 }

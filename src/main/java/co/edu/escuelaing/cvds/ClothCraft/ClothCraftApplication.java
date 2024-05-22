@@ -13,9 +13,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import co.edu.escuelaing.cvds.ClothCraft.model.Day;
 import co.edu.escuelaing.cvds.ClothCraft.model.Notification;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
-import co.edu.escuelaing.cvds.ClothCraft.service.ClothingService;
 import co.edu.escuelaing.cvds.ClothCraft.service.EmailService;
 import co.edu.escuelaing.cvds.ClothCraft.service.NotificationService;
+import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
 @SpringBootApplication
@@ -26,7 +26,7 @@ public class ClothCraftApplication {
 		SpringApplication.run(ClothCraftApplication.class, args);
 	}
 	@Autowired
-	ClothingService clothingService;
+	UserService userService;
 
 	@Autowired
 	EmailService emailService;
@@ -41,7 +41,7 @@ public class ClothCraftApplication {
 		};
 	}
 
-	@Scheduled(cron = "0 0 12 * * ?") // Programa la tarea para que se ejecute a las 12 PM todos los días
+	@Scheduled(cron = "0 15 13 * * ?") // Programa la tarea para que se ejecute a las 12 PM todos los días
     public void sendDailyNotifications() {
         try {
             // Obtén todas las notificaciones pendientes

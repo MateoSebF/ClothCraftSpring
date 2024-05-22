@@ -3,6 +3,7 @@ package co.edu.escuelaing.cvds.ClothCraft.controller;
 import co.edu.escuelaing.cvds.ClothCraft.model.Calendary;
 import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.Day;
+import co.edu.escuelaing.cvds.ClothCraft.model.Notification;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
 import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.ClothingDTO;
@@ -11,6 +12,7 @@ import co.edu.escuelaing.cvds.ClothCraft.model.DTO.OutfitDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
 import co.edu.escuelaing.cvds.ClothCraft.service.ClothingService;
 import co.edu.escuelaing.cvds.ClothCraft.service.DayService;
+import co.edu.escuelaing.cvds.ClothCraft.service.NotificationService;
 import co.edu.escuelaing.cvds.ClothCraft.service.OutfitService;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 
@@ -41,6 +43,8 @@ public class DayController {
     private UserService userService;
     @Autowired
     private ClothingService clothingService;
+    @Autowired
+    private NotificationService notificationService;
 
     /*
      * Method that gets the day by id
@@ -123,6 +127,13 @@ public class DayController {
             Day day = convertToObject(dayDTO);
             day.setCalendary(user.getCalendary());
             day = dayService.createDay(day);
+            if (day != null){
+                Notification notification = new Notification();
+                notification.setDay(day);
+                notification.setUser(user);
+                notification.setOutfit(day.getOutfit());
+                notificationService.saveNotification(notification);
+            }
             return new ResponseEntity<>(day.toDTO(), HttpStatus.CREATED);
         } else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
