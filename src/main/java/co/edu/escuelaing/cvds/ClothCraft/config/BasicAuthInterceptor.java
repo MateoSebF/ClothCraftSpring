@@ -33,6 +33,7 @@ public class BasicAuthInterceptor implements HandlerInterceptor {
         EXCLUDE_URLS.add("/login");
         EXCLUDE_URLS.add("/login/logout");
         EXCLUDE_URLS.add("/user/create");
+        EXCLUDE_URLS.add("/user/verify");
         EXCLUDE_URLS.add("/user/all");
         EXCLUDE_URLS.add("/wardrobe/all");
         EXCLUDE_URLS.add("/calendary/all");
