@@ -33,9 +33,11 @@ public class Notification {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "outfit")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "outfit")
     private Outfit outfit;
 
-    @Column(name = "day")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "day")
     private Day day;
 }
