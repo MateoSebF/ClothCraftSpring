@@ -1,8 +1,8 @@
 package co.edu.escuelaing.cvds.ClothCraft.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import co.edu.escuelaing.cvds.ClothCraft.model.Clothing;
 import co.edu.escuelaing.cvds.ClothCraft.model.Day;
 import co.edu.escuelaing.cvds.ClothCraft.model.Outfit;
 
@@ -12,6 +12,9 @@ import java.util.Properties;
 
 @Service
 public class EmailService {
+
+    @Autowired
+    private OutfitService outfitService;
 
     public void sendVerificationEmail(String to, String token) {
         String from = "notificaciones.cloth.craft@gmail.com"; // Cambiar por tu correo electrónico
@@ -77,9 +80,8 @@ public class EmailService {
             emailContent.append("Don't forget to wear your outfit for ").append(day.getDate()).append("\n\n");
             emailContent.append("Outfit name: ").append(outfit.getName()).append("\n\n");
             emailContent.append("Clothes:\n");
-
-            for (Clothing clothing : outfit.getClothes()) {
-                emailContent.append(clothing.getName()).append("\n");
+            for (String clothing : outfitService.getClothingNameByOutfitId(outfit.getId())) {
+                emailContent.append(clothing).append("\n");
             }
 
             message.setText(emailContent.toString());
