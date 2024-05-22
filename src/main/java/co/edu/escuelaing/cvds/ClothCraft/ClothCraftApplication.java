@@ -41,7 +41,7 @@ public class ClothCraftApplication {
 		};
 	}
 
-	@Scheduled(cron = "0 15 13 * * ?") // Programa la tarea para que se ejecute a las 12 PM todos los días
+	@Scheduled(cron = "0 20 12 * * ?") // Programa la tarea para que se ejecute a las 12 PM todos los días
     public void sendDailyNotifications() {
         try {
             // Obtén todas las notificaciones pendientes
