@@ -59,6 +59,9 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Calendary calendary;
 
+    @Column(name = "isVerified", nullable = false)
+    private boolean isVerified;
+
     public User(String name, String email, String password, 
                 String username, String photoProfile,
                 Wardrobe wardrobe, Calendary calendary) {
@@ -103,7 +106,7 @@ public class User {
 	public UserDTO toDTO() {
         return new UserDTO(id, name, email, password, username,  photoProfile,
             wardrobe != null ? wardrobe.getId() : null,
-            calendary != null ? calendary.getId() : null);
+            calendary != null ? calendary.getId() : null, isVerified);
     }
     
     @Override

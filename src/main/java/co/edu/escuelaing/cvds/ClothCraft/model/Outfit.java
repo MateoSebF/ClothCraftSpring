@@ -27,16 +27,16 @@ import co.edu.escuelaing.cvds.ClothCraft.model.DTO.OutfitDTO;
  * Outfit
  */
 public class Outfit {
-    @Id 
+    @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-   @Column(name = "id", nullable = false, unique = true)
+    @Column(name = "id", nullable = false, unique = true)
     private String id;
-    
+
     @Column(name = "name")
     private String name;
 
-    @Column(name =  "category")
+    @Column(name = "category")
     private Category category;
 
     @ManyToOne
@@ -44,20 +44,19 @@ public class Outfit {
     private Wardrobe wardrobe;
 
     @ManyToMany
-    @JoinTable(name = "Outfit_Clothing", 
-    joinColumns = @JoinColumn(name = "outfit_id"),
-    inverseJoinColumns = @JoinColumn(name = "clothing_id"))
+    @JoinTable(name = "Outfit_Clothing", joinColumns = @JoinColumn(name = "outfit_id"), inverseJoinColumns = @JoinColumn(name = "clothing_id"))
     private List<Clothing> clothes;
-    
-	public OutfitDTO toDTO() {
+
+    public OutfitDTO toDTO() {
         List<String> clothesIds = clothes.stream()
-                                        .map(Clothing::getId)
-                                        .collect(Collectors.toList());
+                .map(Clothing::getId)
+                .collect(Collectors.toList());
 
         return new OutfitDTO(id, name, category, wardrobe != null ? wardrobe.getId() : null, clothesIds);
     }
+
     @Override
-    public String toString(){
+    public String toString() {
         return toDTO().toString();
     }
 }

@@ -58,6 +58,8 @@ public class LoginController {
             responseEntity = ResponseEntity.badRequest().body("User not found");
         } else if (!hashedPassword.equals(user.getPassword())) {
             responseEntity = ResponseEntity.badRequest().body("Wrong password");
+        } else if (!user.isVerified()){
+            responseEntity = ResponseEntity.badRequest().body("User not verified");
         } else {
             // Create a new session
             Session session = new Session(UUID.randomUUID(), Instant.now(), user);

@@ -5,8 +5,10 @@ import co.edu.escuelaing.cvds.ClothCraft.model.User;
 import co.edu.escuelaing.cvds.ClothCraft.model.Wardrobe;
 import co.edu.escuelaing.cvds.ClothCraft.model.DTO.UserDTO;
 import co.edu.escuelaing.cvds.ClothCraft.service.CalendaryService;
+import co.edu.escuelaing.cvds.ClothCraft.service.EmailService;
 import co.edu.escuelaing.cvds.ClothCraft.service.UserService;
 import co.edu.escuelaing.cvds.ClothCraft.service.WardrobeService;
+import jakarta.servlet.http.HttpServletResponse;
 import co.edu.escuelaing.cvds.ClothCraft.service.SessionService;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
@@ -18,12 +20,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.UUID;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /*
  * The class UserController is a controller that allows to manage the users
+ */
+/**
+ * The UserController class handles the HTTP requests related to user management.
+ * It provides endpoints for creating, updating, and retrieving user information.
+ * The class also handles user verification and profile management.
  */
 @RestController
 @RequestMapping("/user")
@@ -37,12 +45,15 @@ public class UserController {
 
     private final SessionService sessionService;
 
+    private final EmailService emailService;
+
     public UserController(UserService userService, WardrobeService wardrobeService, CalendaryService calendaryService,
-            SessionService sessionService) {
+            SessionService sessionService, EmailService emailService) {
         this.userService = userService;
         this.wardrobeService = wardrobeService;
         this.calendaryService = calendaryService;
         this.sessionService = sessionService;
+        this.emailService = emailService;
     }
 
     /*
@@ -57,7 +68,7 @@ public class UserController {
         userDTO.setPassword(escapeHtml4(userDTO.getPassword()));
         userDTO.setUsername(escapeHtml4(userDTO.getUsername()));
         try {
-            
+            userDTO.setVerified(false);
             User user = convertToObject(userDTO);
             // Create a wardrobe and a calendary for the user
             Wardrobe wardrobe = new Wardrobe(user);
@@ -72,11 +83,26 @@ public class UserController {
             user.setCalendary(calendary);
             // Save the user with the wardrobe and the calendary
             user = userService.updateUser(user.getId(), user);
+            // Send an email to the user to verify the account
+            emailService.sendVerificationEmail(user.getEmail(), user.getId());
             return new ResponseEntity<>(escapeHtml4(user.toString()), HttpStatus.CREATED);
         } catch (Exception e) {
             String errorMessage = "An error occurred while processing the request: " + e.getMessage();
             return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/verify")
+    public void verifyAccount(HttpServletResponse response, @RequestParam String token) throws IOException {
+        User user = userService.getUserById(token);
+
+        if (user == null) {
+            return;
+        }
+
+        user.setVerified(true);
+        userService.updateUser(token, user);
+        response.sendRedirect("https://mango-cliff-06b900910.5.azurestaticapps.net/login");
     }
 
     /*
