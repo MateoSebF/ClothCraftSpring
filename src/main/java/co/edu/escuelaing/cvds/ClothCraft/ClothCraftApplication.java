@@ -43,14 +43,6 @@ public class ClothCraftApplication {
 	@Bean
 	public CommandLineRunner run() {
 		return (args) -> {
-			List<Day> days = dayService.getAllDays();
-			for (Day day : days) {
-				Notification notification = new Notification();
-				notification.setDay(day);
-				notification.setUser(day.getCalendary().getUser());
-				notification.setOutfit(day.getOutfit());
-				notificationService.saveNotification(notification);;
-			}
 			log.info("\nrunning the application...\n");
 		};
 	}
