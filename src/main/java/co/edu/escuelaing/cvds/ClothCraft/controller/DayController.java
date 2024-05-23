@@ -109,6 +109,15 @@ public class DayController {
         return new ResponseEntity<>(dayDTOs, HttpStatus.OK);
     }
 
+    @GetMapping("/all/all")
+    public ResponseEntity<List<DayDTO>> getAllDays() {
+        List<Day> days = dayService.getAllDays();
+        List<DayDTO> dayDTOs = days.stream()
+                .map(Day::toDTO)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(dayDTOs, HttpStatus.OK);
+    }
+    
     /*
      * Method that creates a day for a specific user
      * 
